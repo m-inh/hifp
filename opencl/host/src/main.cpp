@@ -71,6 +71,7 @@ unsigned int dwt[NUMDWTECO];
 
 
 int song_id = 0;
+vector<string> song_names;
 vector<double> total_time;
 vector<double> write_transfer_time;
 vector<double> read_transfer_time;
@@ -116,6 +117,8 @@ int main(int argc, char ** argv)
         {
             sprintf(ifpath, "%s/%s",     IDIR, ep->d_name);
             sprintf(ofpath, "%s/%s.raw", ODIR, ep->d_name);
+
+            song_names.push_back(ep->d_name);
 
             ifp = fopen(ifpath, "rb+");
             ASSERT(ifp != NULL);
@@ -397,9 +400,10 @@ void print_executed_time()
 void save_csv(string csvpath)
 {
     printf("\n");
-    printf("Report (csv): %s", csvpath.c_str());
+    printf("Report (csv): %s \n", csvpath.c_str());
     
     csv_data c_data;
+    add_collumn(&c_data, "song_names", song_names);
     add_collumn(&c_data, "total_time", total_time);
     add_collumn(&c_data, "write_transfer_time", write_transfer_time);
     add_collumn(&c_data, "read_transfer_time", read_transfer_time);

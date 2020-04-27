@@ -18,6 +18,7 @@ const char *IDIR = "../wav";
 const char *ODIR = "./fpid";
 const char *CSVDIR = "./report";
 
+vector<string> song_names;
 vector<double> total_time;
 
 
@@ -46,6 +47,8 @@ int main(int argc, char **argv)
         {
             sprintf(ifpath, "%s/%s", IDIR, ep->d_name);
             sprintf(ofpath, "%s/%s.raw", ODIR, ep->d_name);
+
+            song_names.push_back(ep->d_name);
 
             ifp = fopen(ifpath, "rb+");
             ASSERT(ifp != NULL);
@@ -97,9 +100,10 @@ err:
 
 void save_csv(string csvpath)
 {
-    printf("csvpath: %s", csvpath.c_str());
+    printf("Report (csv): %s \n", csvpath.c_str());
     
     csv_data c_data;
+    add_collumn(&c_data, "song_names", song_names);
     add_collumn(&c_data, "total_time", total_time);
 
     write_csv_file_v(&c_data, csvpath);

@@ -396,7 +396,8 @@ void print_executed_time()
 
 void save_csv(string csvpath)
 {
-    printf("csvpath: %s", csvpath.c_str());
+    printf("\n");
+    printf("Report (csv): %s", csvpath.c_str());
     
     csv_data c_data;
     add_collumn(&c_data, "total_time", total_time);

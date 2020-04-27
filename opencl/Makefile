@@ -83,4 +83,7 @@ $(REPORT_DIR) :
 clean :
 	$(ECHO)rm -f $(TARGET_DIR)/$(TARGET)
 
-.PHONY : all clean
+clean-report :
+	$(ECHO)rm -rf $(REPORT_DIR) $(FPID_DIR)
+
+.PHONY : all clean clean-report 

@@ -75,7 +75,7 @@ std::string getBoardBinaryFile(const char *prefix, cl_device_id device);
 // Returns the time from a high-resolution timer in seconds. This value
 // can be used with a value returned previously to measure a high-resolution
 // time difference.
-double getCurrentTimestamp();
+// double getCurrentTimestamp();
 
 // Returns the difference between the CL_PROFILING_COMMAND_END and
 // CL_PROFILING_COMMAND_START values of a cl_event object.

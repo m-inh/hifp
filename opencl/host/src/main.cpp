@@ -365,11 +365,11 @@ void run()
     // Print time taken.
     const double end_time = getCurrentTimestamp();
 
-    total_time.push_back((end_time - start_time) * 1e3);
-    write_transfer_time.push_back((double)(getStartEndTime(write_event[0]) * 1e-6));
-    read_transfer_time.push_back((double)(getStartEndTime(read_event[0]) * 1e-6));
-    dwt_kernel_time.push_back((double)(getStartEndTime(kernel_event[0]) * 1e-6));
-    genfpid_kernel_time.push_back((double)(getStartEndTime(kernel_event[1]) * 1e-6));
+    // total_time.push_back((end_time - start_time) * 1e3);
+    // write_transfer_time.push_back((double)(getStartEndTime(write_event[0]) * 1e-6));
+    // read_transfer_time.push_back((double)(getStartEndTime(read_event[0]) * 1e-6));
+    // dwt_kernel_time.push_back((double)(getStartEndTime(kernel_event[0]) * 1e-6));
+    // genfpid_kernel_time.push_back((double)(getStartEndTime(kernel_event[1]) * 1e-6));
 
 
 

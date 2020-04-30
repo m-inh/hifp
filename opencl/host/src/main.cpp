@@ -139,19 +139,19 @@ int main(int argc, char ** argv)
         }
     }
 
-    print_executed_time();
+    // print_executed_time();
     
-    closedir(dir);
+    // closedir(dir);
 
-    sprintf(csvpath, "%s/%u.csv", CSVDIR, (int) round(getCurrentTimestamp()));
-    save_csv(csvpath);
+    // sprintf(csvpath, "%s/%u.csv", CSVDIR, (int) round(getCurrentTimestamp()));
+    // save_csv(csvpath);
 
-    //cleanup();
+    // cleanup();
 
     return 0;
 
 err:
-    closedir(dir);
+    // closedir(dir);
     return -1;
 }
 

@@ -63,7 +63,7 @@ endif
 all : $(TARGET_DIR)/$(TARGET)
 
 # Host executable target.
-$(TARGET_DIR)/$(TARGET) : Makefile $(SRCS) $(INCS) $(TARGET_DIR) $(FPID_DIR) $(REPORT_DIR) clean
+$(TARGET_DIR)/$(TARGET) : Makefile $(SRCS) $(INCS) $(TARGET_DIR) clean
 	$(ECHO)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -fPIC $(foreach D,$(INC_DIRS),-I$D) \
 		$(AOCL_COMPILE_CONFIG) $(SRCS) $(AOCL_LINK_CONFIG) \
 		$(foreach D,$(LIB_DIRS),-L$D) \
@@ -72,8 +72,9 @@ $(TARGET_DIR)/$(TARGET) : Makefile $(SRCS) $(INCS) $(TARGET_DIR) $(FPID_DIR) $(R
 		-o $(TARGET_DIR)/$(TARGET)
 
 $(TARGET_DIR) :
-	$(ECHO)mkdir $(TARGET_DIR) $(FPID_DIR) $(REPORT_DIR)
-	
+	$(ECHO)mkdir $(TARGET_DIR)
+
+dir : $(FPID_DIR) $(REPORT_DIR)
 $(FPID_DIR) :
 	$(ECHO)mkdir $(FPID_DIR)
 

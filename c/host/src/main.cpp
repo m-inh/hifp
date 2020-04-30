@@ -62,8 +62,9 @@ int main(int argc, char **argv)
             ASSERT(r == 0);
 
             const double end_time = getCurrentTimestamp();
-
-            total_time.push_back((end_time-start_time) * 1e3);
+            const double total_time_tmp = (end_time-start_time) * 1e3;
+            total_time.push_back(total_time_tmp);
+            printf("%s : %lf \n", ep->d_name, total_time_tmp);
 
 
             fclose(ifp);

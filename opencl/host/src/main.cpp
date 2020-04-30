@@ -146,7 +146,7 @@ int main(int argc, char ** argv)
     sprintf(csvpath, "%s/%u.csv", CSVDIR, (int) round(getCurrentTimestamp()));
     save_csv(csvpath);
 
-    cleanup();
+    //cleanup();
 
     return 0;
 
@@ -363,7 +363,7 @@ void run()
 
 
     // Print time taken.
-    const double end_time = getCurrentTimestamp();
+    //const double end_time = getCurrentTimestamp();
 
     // total_time.push_back((end_time - start_time) * 1e3);
     // write_transfer_time.push_back((double)(getStartEndTime(write_event[0]) * 1e-6));
@@ -373,13 +373,13 @@ void run()
 
 
 
-
     /* Release all events */
+    /*
     clReleaseEvent(kernel_event[0]);
     clReleaseEvent(kernel_event[1]);
     clReleaseEvent(read_event[0]);
     clReleaseEvent(write_event[0]);
-
+    */
 
     /* Verify result */
     // verify_fpid(fpid, NULL, NULL);

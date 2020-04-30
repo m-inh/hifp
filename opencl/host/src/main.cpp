@@ -330,15 +330,15 @@ void run()
     /* kernel 0 */
     
 
-    status = clEnqueueNDRangeKernel(queue,
-                                    kernel[0],
-                                    work_dim[0],
-                                    global_work_offset[0] == 0 ? NULL : &global_work_offset[0],
-                                    global_work_size[0]   == 0 ? NULL : &global_work_size[0],
-                                    local_work_size[0]    == 0 ? NULL : &local_work_size[0],
-                                    num_events_in_wait_list[0],
-                                    &write_event[0],
-                                    &kernel_event[0]);
+    // status = clEnqueueNDRangeKernel(queue,
+    //                                 kernel[0],
+    //                                 work_dim[0],
+    //                                 global_work_offset[0] == 0 ? NULL : &global_work_offset[0],
+    //                                 global_work_size[0]   == 0 ? NULL : &global_work_size[0],
+    //                                 local_work_size[0]    == 0 ? NULL : &local_work_size[0],
+    //                                 num_events_in_wait_list[0],
+    //                                 &write_event[0],
+    //                                 &kernel_event[0]);
     checkError(status, "Failed to launch dwt kernel");
 
     /* kernel 1 */
@@ -359,7 +359,7 @@ void run()
     // clWaitForEvents(1, read_event);
 
     // debug only
-    clWaitForEvents(1, &kernel_event[0]);
+    // clWaitForEvents(1, &kernel_event[0]);
 
 
     // Print time taken.

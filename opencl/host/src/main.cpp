@@ -245,18 +245,19 @@ void init_opencl()
     printf("\n");
     printf("Launching for device:      %d  \n", device);
     printf("- DWT kernel:      \n");
-    printf("- work_dim:                %u  \n", work_dim[0]);
-    printf("- num_events_in_wait_list: %u  \n", num_events_in_wait_list[0]);
-    printf("- global_work_offset:      %lu \n", global_work_offset[0]);
-    printf("- global_work_size:        %lu \n", global_work_size[0]);
-    printf("- local_work_size:         %lu \n", local_work_size[0]);
+    printf("+ work_dim:                %u  \n", work_dim[0]);
+    printf("+ num_events_in_wait_list: %u  \n", num_events_in_wait_list[0]);
+    printf("+ global_work_offset:      %lu \n", global_work_offset[0]);
+    printf("+ global_work_size:        %lu \n", global_work_size[0]);
+    printf("+ local_work_size:         %lu \n", local_work_size[0]);
     
+    printf("\n");
     printf("- gen_fpid kernel:        \n");
-    printf("- work_dim:                %u  \n", work_dim[1]);
-    printf("- num_events_in_wait_list: %u  \n", num_events_in_wait_list[1]);
-    printf("- global_work_offset:      %lu \n", global_work_offset[1]);
-    printf("- global_work_size:        %lu \n", global_work_size[1]);
-    printf("- local_work_size:         %lu \n", local_work_size[1]);
+    printf("+ work_dim:                %u  \n", work_dim[1]);
+    printf("+ num_events_in_wait_list: %u  \n", num_events_in_wait_list[1]);
+    printf("+ global_work_offset:      %lu \n", global_work_offset[1]);
+    printf("+ global_work_size:        %lu \n", global_work_size[1]);
+    printf("+ local_work_size:         %lu \n", local_work_size[1]);
 }
 
 

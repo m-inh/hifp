@@ -342,21 +342,24 @@ void run()
     checkError(status, "Failed to launch dwt kernel");
 
     /* kernel 1 */
-    status = clEnqueueNDRangeKernel(queue,
-                                    kernel[1],
-                                    work_dim[1],
-                                    global_work_offset[1] == 0 ? NULL : &global_work_offset[1],
-                                    global_work_size[1]   == 0 ? NULL : &global_work_size[1],
-                                    local_work_size[1]    == 0 ? NULL : &local_work_size[1],
-                                    num_events_in_wait_list[1],
-                                    &kernel_event[0],
-                                    &kernel_event[1]);
+    // status = clEnqueueNDRangeKernel(queue,
+    //                                 kernel[1],
+    //                                 work_dim[1],
+    //                                 global_work_offset[1] == 0 ? NULL : &global_work_offset[1],
+    //                                 global_work_size[1]   == 0 ? NULL : &global_work_size[1],
+    //                                 local_work_size[1]    == 0 ? NULL : &local_work_size[1],
+    //                                 num_events_in_wait_list[1],
+    //                                 &kernel_event[0],
+    //                                 &kernel_event[1]);
     checkError(status, "Failed to launch gen_fpid kernel");    
 
 
     /* Read result from device */
-    status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMFRAME * sizeof(unsigned int), fpid, 1, &kernel_event[1], &read_event[0]);
-    clWaitForEvents(1, read_event);
+    // status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMFRAME * sizeof(unsigned int), fpid, 1, &kernel_event[1], &read_event[0]);
+    // clWaitForEvents(1, read_event);
+
+    // debug only
+    clWaitForEvents(1, &kernel_event[0]);
 
 
     // Print time taken.

@@ -13,12 +13,13 @@ endif
 AOCL_COMPILE_CONFIG := 
 AOCL_LINK_CONFIG := 
 U_NAME := $(shell uname)
+CXXFLAGS := -std=c++11
 
 # Compilation flags
 ifeq ($(DEBUG),1)
 CXXFLAGS += -g
 else
-CXXFLAGS += -O2 -std=c++11
+CXXFLAGS += -O2
 endif
 
 # Compiler

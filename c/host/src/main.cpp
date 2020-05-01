@@ -54,7 +54,7 @@ int main(int argc, char **argv)
             ASSERT(ifp != NULL);
 
             ofp = fopen(ofpath, "wb");
-            ASSERT(ifp != NULL);
+            ASSERT(ofp != NULL);
 
             const double start_time = getCurrentTimestamp();
 

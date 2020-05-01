@@ -61,8 +61,8 @@ const size_t local_work_size[2] = {0, 0};
 
 // Problem data
 const char *IDIR = I_DIR;
-const char *ODIR = "./fpid";
-const char *CSVDIR = "./report";
+const char *ODIR = "../fpid";
+const char *CSVDIR = "../report";
 
 short int    wave16[NUMWAVE];
 unsigned int fpid[NUMFRAME];
@@ -124,17 +124,22 @@ int main(int argc, char ** argv)
             ASSERT(ifp != NULL);
 
             ofp = fopen(ofpath, "wb");
-            ASSERT(ifp != NULL);
+            ASSERT(ofp != NULL);
 
             init_problem(ifp, ofp);
             run();
             save_fp_to_disk(ofp, fpid);
             
-            fclose(ifp);
-            fclose(ofp);
-            ifp = NULL;
-            ofp = NULL;
+            if (ifp != NULL) {
+                fclose(ifp);
+                ifp = NULL;
+            }
 
+            if (ofp != NULL) {
+                fclose(ofp);
+                ofp = NULL;
+            }
+            
             song_id++;
         }
     }

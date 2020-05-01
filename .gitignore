@@ -3,3 +3,5 @@
 bin
 **/fpid
 **/report
+*.log
+log.txt

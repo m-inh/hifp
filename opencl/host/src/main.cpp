@@ -3,8 +3,12 @@
 
 #ifdef __APPLE__
 #define I_DIR "../wav"
+#define O_DIR "./fpid"
+#define CSV_DIR "./report"
 #else
 #define I_DIR "../../wav"
+#define O_DIR "../fpid"
+#define CSV_DIR "../report"
 #endif
 
 #include <stdio.h>
@@ -61,8 +65,8 @@ const size_t local_work_size[2] = {0, 0};
 
 // Problem data
 const char *IDIR = I_DIR;
-const char *ODIR = "../fpid";
-const char *CSVDIR = "../report";
+const char *ODIR = O_DIR;
+const char *CSVDIR = CSV_DIR;
 
 short int    wave16[NUMWAVE];
 unsigned int fpid[NUMFRAME];

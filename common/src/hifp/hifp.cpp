@@ -122,7 +122,7 @@ err:
     return -1;
 }
 
-int gen_fpid(
+int debug_gen_fpid(
     short int *    wave16, 
     unsigned int * plain_fpid, 
     unsigned int * fpid, 
@@ -149,6 +149,36 @@ int gen_fpid(
 
     fpid[NUMFRAME - 1] <<= 1;
     plain_fpid[NUMDWTECO - 1] = 0;
+
+    return 0;
+err:
+    return -1;
+}
+
+int gen_fpid(
+    short int *    wave16, 
+    unsigned int * fpid,
+    unsigned int * dwt_eco
+)
+{
+    dwt_eco[0] = dwt1(&wave16[0]);
+
+    for (int i = 32, j = 0, k = 0; j < (NUMDWTECO - 1); j++)
+    {
+        dwt_eco[j + 1] = dwt1(&wave16[i]);
+        fpid[k] <<= 1;
+        if (dwt_eco[j] > dwt_eco[j + 1])
+        {   
+            fpid[k] |= 1;
+        }
+        if ((j % 32) == 31)
+        {
+            k++;
+        }
+        i += 32;
+    }
+
+    fpid[NUMFRAME - 1] <<= 1;
 
     return 0;
 err:
@@ -265,34 +295,34 @@ void verify_fpid(
     printf("\n\n");
 }
 
-int run_all(
-    FILE * ifp, 
-    FILE * ofp
-)
-{
-    WAVEHEADER wave_header;
-    short int wave16[NUMWAVE];
-    unsigned int fpid[NUMFRAME];
-    unsigned int plain_fpid[NUMFRAME];
-    unsigned int dwt_eco[NUMDWTECO];
+// int run_all(
+//     FILE * ifp, 
+//     FILE * ofp
+// )
+// {
+//     WAVEHEADER wave_header;
+//     short int wave16[NUMWAVE];
+//     unsigned int fpid[NUMFRAME];
+//     unsigned int plain_fpid[NUMFRAME];
+//     unsigned int dwt_eco[NUMDWTECO];
 
-    /* initialize all array elements to zero */
-    memset(wave16, 0, sizeof(wave16));
-    memset(fpid, 0, sizeof(fpid));
-    memset(plain_fpid, 0, sizeof(plain_fpid));
-    memset(dwt_eco, 0, sizeof(dwt_eco));
+//     /* initialize all array elements to zero */
+//     memset(wave16, 0, sizeof(wave16));
+//     memset(fpid, 0, sizeof(fpid));
+//     memset(plain_fpid, 0, sizeof(plain_fpid));
+//     memset(dwt_eco, 0, sizeof(dwt_eco));
 
-    /* run all */
-    wave_header = read_wave_header(ifp);
-    read_wav_data(ifp, wave16, wave_header);
-    gen_fpid(wave16, plain_fpid, fpid, dwt_eco);
-    // verify_fpid(fpid, plain_fpid, dwt_eco);
-    // save_fp_to_disk(ofp, fpid);
+//     /* run all */
+//     wave_header = read_wave_header(ifp);
+//     read_wav_data(ifp, wave16, wave_header);
+//     gen_fpid(wave16, plain_fpid, fpid, dwt_eco);
+//     // verify_fpid(fpid, plain_fpid, dwt_eco);
+//     // save_fp_to_disk(ofp, fpid);
 
-    return 0;
+//     return 0;
 
-err:
-    return -1;
-}
+// err:
+//     return -1;
+// }
 
 } // namespace hifp

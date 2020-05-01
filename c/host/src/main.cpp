@@ -26,6 +26,10 @@ using namespace std;
 using namespace hifp;
 using namespace my_utils;
 
+const int NUMWAVE   = NUM_WAVE;
+const int NUMDWTECO = NUM_DWT_ECO;
+const int NUMFRAME  = NUM_FRAME;
+
 const char *IDIR = I_DIR;
 const char *ODIR = O_DIR;
 const char *CSVDIR = CSV_DIR;
@@ -51,6 +55,18 @@ int main(int argc, char **argv)
     FILE *ofp = NULL;
     int r;
 
+    WAVEHEADER wave_header;
+    short int wave16[NUMWAVE];
+    unsigned int fpid[NUMFRAME];
+    unsigned int plain_fpid[NUMFRAME];
+    unsigned int dwt_eco[NUMDWTECO];
+
+    /* initialize all array elements to zero */
+    memset(wave16, 0, sizeof(wave16));
+    memset(fpid, 0, sizeof(fpid));
+    memset(plain_fpid, 0, sizeof(plain_fpid));
+    memset(dwt_eco, 0, sizeof(dwt_eco));
+
     dir = opendir(IDIR);
 
     ASSERT(dir != NULL);
@@ -70,12 +86,17 @@ int main(int argc, char **argv)
             ofp = fopen(ofpath, "wb");
             ASSERT(ofp != NULL);
 
+            /* Prepare wave data */
+            wave_header = read_wave_header(ifp);
+            read_wav_data(ifp, wave16, wave_header);
+
             const double start_time = getCurrentTimestamp();
 
-            r = run_all(ifp, ofp);
-            ASSERT(r == 0);
+            /* Run */
+            gen_fpid(wave16, fpid, dwt_eco);
 
             const double end_time = getCurrentTimestamp();
+
             const double total_time_tmp = (end_time-start_time) * 1e3;
             total_time.push_back(total_time_tmp);
             printf("%s : %lf \n", ep->d_name, total_time_tmp);

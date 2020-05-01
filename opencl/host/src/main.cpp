@@ -139,14 +139,14 @@ int main(int argc, char ** argv)
         }
     }
 
-    // print_executed_time();
+    print_executed_time();
     
-    // closedir(dir);
+    closedir(dir);
 
-    // sprintf(csvpath, "%s/%u.csv", CSVDIR, (int) round(getCurrentTimestamp()));
-    // save_csv(csvpath);
+    sprintf(csvpath, "%s/%u.csv", CSVDIR, (int) round(getCurrentTimestamp()));
+    save_csv(csvpath);
 
-    // cleanup();
+    cleanup();
 
     return 0;
 
@@ -205,7 +205,6 @@ void init_opencl()
     // Create the program for all device. Use the first device as the
     // representative device (assuming all device are of the same type).
 #ifdef __APPLE__
-    // Load the kernel source code into the array source_str
     FILE *fp;
     char *source_str;
     size_t source_size;
@@ -330,62 +329,57 @@ void run()
     /* kernel 0 */
     
 
-    // status = clEnqueueNDRangeKernel(queue,
-    //                                 kernel[0],
-    //                                 work_dim[0],
-    //                                 global_work_offset[0] == 0 ? NULL : &global_work_offset[0],
-    //                                 global_work_size[0]   == 0 ? NULL : &global_work_size[0],
-    //                                 local_work_size[0]    == 0 ? NULL : &local_work_size[0],
-    //                                 num_events_in_wait_list[0],
-    //                                 &write_event[0],
-    //                                 &kernel_event[0]);
+    status = clEnqueueNDRangeKernel(queue,
+                                    kernel[0],
+                                    work_dim[0],
+                                    global_work_offset[0] == 0 ? NULL : &global_work_offset[0],
+                                    global_work_size[0]   == 0 ? NULL : &global_work_size[0],
+                                    local_work_size[0]    == 0 ? NULL : &local_work_size[0],
+                                    num_events_in_wait_list[0],
+                                    &write_event[0],
+                                    &kernel_event[0]);
     checkError(status, "Failed to launch dwt kernel");
 
     /* kernel 1 */
-    // status = clEnqueueNDRangeKernel(queue,
-    //                                 kernel[1],
-    //                                 work_dim[1],
-    //                                 global_work_offset[1] == 0 ? NULL : &global_work_offset[1],
-    //                                 global_work_size[1]   == 0 ? NULL : &global_work_size[1],
-    //                                 local_work_size[1]    == 0 ? NULL : &local_work_size[1],
-    //                                 num_events_in_wait_list[1],
-    //                                 &kernel_event[0],
-    //                                 &kernel_event[1]);
+    status = clEnqueueNDRangeKernel(queue,
+                                    kernel[1],
+                                    work_dim[1],
+                                    global_work_offset[1] == 0 ? NULL : &global_work_offset[1],
+                                    global_work_size[1]   == 0 ? NULL : &global_work_size[1],
+                                    local_work_size[1]    == 0 ? NULL : &local_work_size[1],
+                                    num_events_in_wait_list[1],
+                                    &kernel_event[0],
+                                    &kernel_event[1]);
     checkError(status, "Failed to launch gen_fpid kernel");    
 
 
     /* Read result from device */
-    // status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMFRAME * sizeof(unsigned int), fpid, 1, &kernel_event[1], &read_event[0]);
-    // clWaitForEvents(1, read_event);
+    status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMFRAME * sizeof(unsigned int), fpid, 1, &kernel_event[1], &read_event[0]);
+    clWaitForEvents(1, read_event);
 
     // debug only
     // clWaitForEvents(1, &kernel_event[0]);
 
 
     // Print time taken.
-    //const double end_time = getCurrentTimestamp();
+    const double end_time = getCurrentTimestamp();
 
-    // total_time.push_back((end_time - start_time) * 1e3);
-    // write_transfer_time.push_back((double)(getStartEndTime(write_event[0]) * 1e-6));
-    // read_transfer_time.push_back((double)(getStartEndTime(read_event[0]) * 1e-6));
-    // dwt_kernel_time.push_back((double)(getStartEndTime(kernel_event[0]) * 1e-6));
-    // genfpid_kernel_time.push_back((double)(getStartEndTime(kernel_event[1]) * 1e-6));
+    total_time.push_back((end_time - start_time) * 1e3);
+    write_transfer_time.push_back((double)(getStartEndTime(write_event[0]) * 1e-6));
+    read_transfer_time.push_back((double)(getStartEndTime(read_event[0]) * 1e-6));
+    dwt_kernel_time.push_back((double)(getStartEndTime(kernel_event[0]) * 1e-6));
+    genfpid_kernel_time.push_back((double)(getStartEndTime(kernel_event[1]) * 1e-6));
 
 
 
     /* Release all events */
-    /*
     clReleaseEvent(kernel_event[0]);
     clReleaseEvent(kernel_event[1]);
     clReleaseEvent(read_event[0]);
     clReleaseEvent(write_event[0]);
-    */
 
     /* Verify result */
     // verify_fpid(fpid, NULL, NULL);
-
-    /* Save FPID to disk */
-    // save_fp_to_disk(ofp, fpid);
 }
 
 void print_executed_time() 

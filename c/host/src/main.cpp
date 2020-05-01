@@ -10,13 +10,23 @@
 #include "utils/utils.h"
 #include "utils/csv.h"
 
+#ifdef __APPLE__
+#define I_DIR "../wav"
+#define O_DIR "./fpid"
+#define CSV_DIR "./report"
+#else
+#define I_DIR "../_wav"
+#define O_DIR "./fpid"
+#define CSV_DIR "./report"
+#endif
+
 using namespace std;
 using namespace hifp;
 using namespace my_utils;
 
-const char *IDIR = "../wav";
-const char *ODIR = "./fpid";
-const char *CSVDIR = "./report";
+const char *IDIR = I_DIR;
+const char *ODIR = O_DIR;
+const char *CSVDIR = CSV_DIR;
 
 vector<string> song_names;
 vector<double> total_time;

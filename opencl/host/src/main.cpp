@@ -6,7 +6,7 @@
 #define O_DIR "./fpid"
 #define CSV_DIR "./report"
 #else
-#define I_DIR "../../wav"
+#define I_DIR "../../_wav"
 #define O_DIR "../fpid"
 #define CSV_DIR "../report"
 #endif

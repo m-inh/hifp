@@ -5,3 +5,4 @@ bin
 **/report
 *.log
 log.txt
+_wav

@@ -68,6 +68,22 @@ void print_array(unsigned int *arr, int n)
     printf("=============================");
 }
 
+int get_date_time(char *buffer)
+{
+    time_t time_raw_format;
+    struct tm *ptr_time;
+
+    time(&time_raw_format);
+    ptr_time = localtime(&time_raw_format);
+    if (strftime(buffer, 50, "%Y_%m_%d", ptr_time) == 0)
+    {
+        perror("Couldn't prepare formatted string");
+        return -1;
+    }
+
+    return 1;
+}
+
 // High-resolution timer.
 double getCurrentTimestamp()
 {

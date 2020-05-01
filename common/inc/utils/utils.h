@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <algorithm>
+#include <time.h>
 
 namespace my_utils
 {
@@ -13,6 +14,8 @@ namespace my_utils
 
 void print_array(int *arr, int n);
 void print_array(unsigned int *arr, int n);
+
+int get_date_time(char *buffer);
 
 double getCurrentTimestamp();
 

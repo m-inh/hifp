@@ -108,6 +108,7 @@ int main(int argc, char ** argv)
     char ifpath[256];
     char ofpath[256];
     char csvpath[256];
+    char current_datetime[50];
     FILE *ifp = NULL;
     FILE *ofp = NULL;
     FILE *csvfp = NULL;
@@ -152,7 +153,8 @@ int main(int argc, char ** argv)
     
     closedir(dir);
 
-    sprintf(csvpath, "%s/%u.csv", CSVDIR, (int) round(getCurrentTimestamp()));
+    get_date_time((char *) current_datetime);
+    sprintf(csvpath, "%s/%s.%s_%u.csv", CSVDIR, getPlatformName(platform).c_str(), current_datetime, (int) round(getCurrentTimestamp()));
     save_csv(csvpath);
 
     cleanup();

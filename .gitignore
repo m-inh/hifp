@@ -2,7 +2,6 @@
 .vscode
 bin
 **/fpid
-**/report
 *.log
 log.txt
 _wav

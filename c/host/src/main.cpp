@@ -14,10 +14,12 @@
 #define I_DIR "../wav"
 #define O_DIR "./fpid"
 #define CSV_DIR "./report"
+#define PLATFORM_NAME "Apple"
 #else
 #define I_DIR "../_wav"
 #define O_DIR "./fpid"
 #define CSV_DIR "./report"
+#define PLATFORM_NAME "Linux"
 #endif
 
 using namespace std;
@@ -27,6 +29,7 @@ using namespace my_utils;
 const char *IDIR = I_DIR;
 const char *ODIR = O_DIR;
 const char *CSVDIR = CSV_DIR;
+const char *platform = PLATFORM_NAME;
 
 vector<string> song_names;
 vector<double> total_time;
@@ -43,6 +46,7 @@ int main(int argc, char **argv)
     char ifpath[256];
     char ofpath[256];
     char csvpath[256];
+    char current_datetime[50];
     FILE *ifp = NULL;
     FILE *ofp = NULL;
     int r;
@@ -85,7 +89,8 @@ int main(int argc, char **argv)
         }
     }
 
-    sprintf(csvpath, "%s/%u.csv", CSVDIR, (int) round(getCurrentTimestamp()));
+    get_date_time((char *) current_datetime);
+    sprintf(csvpath, "%s/%s.%s_%u.csv", CSVDIR, platform, current_datetime, (int) round(getCurrentTimestamp()));
     save_csv(csvpath);
 
     closedir(dir);

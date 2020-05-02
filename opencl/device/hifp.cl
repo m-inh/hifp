@@ -43,7 +43,7 @@ __kernel void generate_fpid(
 
     /* Generate FPID */
     if (global_id < NUMFRAME - 1) {
-        #pragma unroll
+#pragma unroll
         for (i=0; i<32; i++) {
             dwteco_index = dwteco_offset + i;
             
@@ -54,7 +54,7 @@ __kernel void generate_fpid(
             }
         }
     } else {
-        #pragma unroll
+#pragma unroll
         for (i=0; i<31; i++) {
             dwteco_index = dwteco_offset + i;
             

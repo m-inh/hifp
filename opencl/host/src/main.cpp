@@ -43,6 +43,7 @@ const int NUMFRAME = NUM_FRAME;
 // OpenCL runtime configuration
 string binary_file = "hifp.aocx";
 cl_platform_id platform = NULL;
+char platform_name[50];
 unsigned num_devices = 0;
 cl_device_id device = NULL;
 cl_context context = NULL;
@@ -154,7 +155,7 @@ int main(int argc, char ** argv)
     closedir(dir);
 
     get_date_time((char *) current_datetime);
-    sprintf(csvpath, "%s/%s.%s_%u.csv", CSVDIR, getPlatformName(platform).c_str(), current_datetime, (int) round(getCurrentTimestamp()));
+    sprintf(csvpath, "%s/%s.%s_%u.csv", CSVDIR, platform_name, current_datetime, (int) round(getCurrentTimestamp()));
     save_csv(csvpath);
 
     cleanup();
@@ -177,6 +178,7 @@ void init_opencl()
     // Get the OpenCL platform
 #ifdef __APPLE__
     platform = findPlatform("Apple");
+    sprintf(platform_name, "%s", "apple");
 #else
     if (!setCwdToExeDir())
     {
@@ -184,6 +186,7 @@ void init_opencl()
     }
 
     platform = findPlatform("Intel");
+    sprintf(platform_name, "%s", "intel_pac_a10");
 #endif
     if (platform == NULL)
     {

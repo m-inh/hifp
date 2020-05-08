@@ -303,7 +303,6 @@ int init_problem(FILE *ifp, FILE *ofp)
 
 void run()
 {
-    const double start_time = getCurrentTimestamp();
     cl_int status;
     cl_event write_event[1];
     cl_event read_event[1];
@@ -333,6 +332,8 @@ void run()
     status = clSetKernelArg(kernel[1], argi++, sizeof(cl_mem), &fpid_buf);
     checkError(status, "Failed to set argument %d", argi - 1);
 
+    /* start counting execution-time */
+    const double start_time = getCurrentTimestamp();
 
     /* Transfer data to device */
     status = clEnqueueWriteBuffer(queue, wave16_buf, CL_FALSE, 0, NUMWAVE * sizeof(short int), wave16, 0, NULL, &write_event[0]);
@@ -371,11 +372,8 @@ void run()
     status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMFRAME * sizeof(unsigned int), fpid, 1, &kernel_event[1], &read_event[0]);
     clWaitForEvents(1, read_event);
 
-    // debug only
-    // clWaitForEvents(1, &kernel_event[0]);
 
-
-    // Print time taken.
+    /* finish counting execution-time */
     const double end_time = getCurrentTimestamp();
 
     total_time.push_back((end_time - start_time) * 1e3);
@@ -415,12 +413,12 @@ void save_csv(string csvpath)
     printf("Report (csv): %s \n", csvpath.c_str());
     
     csv_data c_data;
-    add_collumn(&c_data, "song_names", song_names);
-    add_collumn(&c_data, "total_time", total_time);
-    add_collumn(&c_data, "write_transfer_time", write_transfer_time);
-    add_collumn(&c_data, "read_transfer_time", read_transfer_time);
-    add_collumn(&c_data, "dwt_kernel_time", dwt_kernel_time);
-    add_collumn(&c_data, "genfpid_kernel_time", genfpid_kernel_time);
+    add_collumn(&c_data, "song", song_names);
+    add_collumn(&c_data, "total", total_time);
+    add_collumn(&c_data, "write", write_transfer_time);
+    add_collumn(&c_data, "read", read_transfer_time);
+    add_collumn(&c_data, "dwt", dwt_kernel_time);
+    add_collumn(&c_data, "gen_fpid", genfpid_kernel_time);
 
     write_csv_file_v(&c_data, csvpath);
 }

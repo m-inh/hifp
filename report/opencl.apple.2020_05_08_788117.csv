@@ -1,0 +1,4 @@
+song_names,total_time,write_transfer_time,read_transfer_time,dwt_kernel_time,genfpid_kernel_time
+S0000.wav,0.403000,0.119315,0.000230,0.051997,0.032579
+S0001.wav,4.605000,0.128154,0.000115,0.067743,0.040766
+S0002.wav,0.753000,0.345002,0.000698,0.057166,0.043200

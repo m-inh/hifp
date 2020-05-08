@@ -4,11 +4,11 @@
 #ifdef __APPLE__
 #define I_DIR "../wav"
 #define O_DIR "./fpid"
-#define CSV_DIR "./report"
+#define CSV_DIR "../report"
 #else
 #define I_DIR "../../_wav"
 #define O_DIR "../fpid"
-#define CSV_DIR "../report"
+#define CSV_DIR "../../report"
 #endif
 
 #include <stdio.h>
@@ -155,7 +155,7 @@ int main(int argc, char ** argv)
     closedir(dir);
 
     get_date_time((char *) current_datetime);
-    sprintf(csvpath, "%s/%s.%s_%u.csv", CSVDIR, platform_name, current_datetime, (int) round(getCurrentTimestamp()));
+    sprintf(csvpath, "%s/%s.%s.%s_%u.csv", CSVDIR, "opencl", platform_name, current_datetime, (int) round(getCurrentTimestamp()));
     save_csv(csvpath);
 
     cleanup();

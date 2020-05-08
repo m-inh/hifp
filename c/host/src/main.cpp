@@ -13,12 +13,12 @@
 #ifdef __APPLE__
 #define I_DIR "../wav"
 #define O_DIR "./fpid"
-#define CSV_DIR "./report"
+#define CSV_DIR "../report"
 #define PLATFORM_NAME "apple"
 #else
 #define I_DIR "../_wav"
 #define O_DIR "./fpid"
-#define CSV_DIR "./report"
+#define CSV_DIR "../report"
 #define PLATFORM_NAME "linux"
 #endif
 
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
     }
 
     get_date_time((char *) current_datetime);
-    sprintf(csvpath, "%s/%s.%s_%u.csv", CSVDIR, platform, current_datetime, (int) round(getCurrentTimestamp()));
+    sprintf(csvpath, "%s/%s.%s.%s_%u.csv", CSVDIR, "c", platform, current_datetime, (int) round(getCurrentTimestamp()));
     save_csv(csvpath);
 
     closedir(dir);

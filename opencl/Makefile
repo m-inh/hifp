@@ -29,7 +29,6 @@ CXX := g++
 TARGET := host
 TARGET_DIR := bin
 FPID_DIR := fpid
-REPORT_DIR := report
 
 # Directories
 INC_DIRS := ../common/inc
@@ -74,18 +73,12 @@ $(TARGET_DIR)/$(TARGET) : Makefile $(SRCS) $(INCS) $(TARGET_DIR) clean
 $(TARGET_DIR) :
 	$(ECHO)mkdir $(TARGET_DIR)
 
-dir : $(FPID_DIR) $(REPORT_DIR)
+dir : $(FPID_DIR)
 $(FPID_DIR) :
 	$(ECHO)mkdir $(FPID_DIR)
-
-$(REPORT_DIR) :
-	$(ECHO)mkdir $(REPORT_DIR)
 
 # Standard make targets
 clean :
 	$(ECHO)rm -f $(TARGET_DIR)/$(TARGET)
 
-clean-report :
-	$(ECHO)rm -rf $(REPORT_DIR) $(FPID_DIR)
-
-.PHONY : all clean clean-report 
+.PHONY : all clean 

@@ -1,6 +1,8 @@
 .DS_Store
 .vscode
 bin
+_bin
+__bin
 **/fpid
 *.log
 log.txt

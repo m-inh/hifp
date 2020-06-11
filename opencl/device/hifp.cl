@@ -5,7 +5,7 @@
 
 __kernel void dwt(
     __global const short int * restrict wave16,
-    __global unsigned int * restrict    dwteco
+    __global short int * restrict    dwteco16
 )
 {
     int global_id  = get_global_id(0);
@@ -21,12 +21,12 @@ __kernel void dwt(
         }
     }
 
-    dwteco[global_id] = dwteco_tmp[0];
+    dwteco16[global_id] = dwteco_tmp[0];
 }
 
 
 __kernel void generate_fpid(
-    __global const unsigned int * restrict dwteco,
+    __global const short int * restrict dwteco16,
     __global unsigned int * restrict       fpid
 )
 {
@@ -43,7 +43,7 @@ __kernel void generate_fpid(
             
             fpid[global_id] <<= 1;
             
-            if (dwteco[dwteco_index] > dwteco[dwteco_index + 1]) {
+            if (dwteco16[dwteco_index] > dwteco16[dwteco_index + 1]) {
                 fpid[global_id] |= 1;
             }
         }
@@ -54,7 +54,7 @@ __kernel void generate_fpid(
             
             fpid[global_id] <<= 1;
             
-            if (dwteco[dwteco_index] > dwteco[dwteco_index + 1]) {
+            if (dwteco16[dwteco_index] > dwteco16[dwteco_index + 1]) {
                 fpid[global_id] |= 1;
             }
         }

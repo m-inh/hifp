@@ -4,8 +4,8 @@
 
 
 __kernel void dwt(
-    __global const short int * wave16,
-    __global unsigned int *    dwteco
+    __global const short int * restrict wave16,
+    __global unsigned int * restrict    dwteco
 )
 {
     int global_id  = get_global_id(0);
@@ -32,8 +32,8 @@ __kernel void dwt(
 
 
 __kernel void generate_fpid(
-    __global const unsigned int * dwteco,
-    __global unsigned int *       fpid
+    __global const unsigned int * restrict dwteco,
+    __global unsigned int * restrict       fpid
 )
 {
     int global_id     = get_global_id(0);
@@ -43,6 +43,7 @@ __kernel void generate_fpid(
 
     /* Generate FPID */
     if (global_id < NUMFRAME - 1) {
+        // #pragma unroll
         for (i=0; i<32; i++) {
             dwteco_index = dwteco_offset + i;
             
@@ -53,6 +54,7 @@ __kernel void generate_fpid(
             }
         }
     } else {
+        #pragma unroll
         for (i=0; i<31; i++) {
             dwteco_index = dwteco_offset + i;
             

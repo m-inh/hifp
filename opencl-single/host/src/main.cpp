@@ -155,7 +155,7 @@ int main(int argc, char ** argv)
         }
     }
 
-    //print_executed_time();
+    print_executed_time();
     
     closedir(dir);
 
@@ -177,6 +177,7 @@ err:
 void init_opencl()
 {
     cl_int status;
+    int choose_device = 0;
 
     printf("Initializing OpenCL \n");
 
@@ -184,6 +185,7 @@ void init_opencl()
 #ifdef __APPLE__
     platform = findPlatform("Apple");
     sprintf(platform_name, "%s", "apple");
+    choose_device = 1;
 #else
     if (!setCwdToExeDir())
     {
@@ -211,7 +213,7 @@ void init_opencl()
     }
 
     // Choose 1st device
-    device = devices[0];
+    device = devices[choose_device];
 
     printf("\n");
     printf("Choose device:\n");
@@ -268,13 +270,6 @@ void init_opencl()
     // printf("+ global_work_size:        %lu \n", global_work_size[0]);
     // printf("+ local_work_size:         %lu \n", local_work_size[0]);
     
-    // printf("\n");
-    // printf("- gen_fpid kernel:        \n");
-    // printf("+ work_dim:                %u  \n", work_dim[1]);
-    // printf("+ num_events_in_wait_list: %u  \n", num_events_in_wait_list[1]);
-    // printf("+ global_work_offset:      %lu \n", global_work_offset[1]);
-    // printf("+ global_work_size:        %lu \n", global_work_size[1]);
-    // printf("+ local_work_size:         %lu \n", local_work_size[1]);
 }
 
 
@@ -356,13 +351,11 @@ void run()
     total_time.push_back((end_time - start_time) * 1e3);
     write_transfer_time.push_back((double)(getStartEndTime(write_event[0]) * 1e-6));
     read_transfer_time.push_back((double)(getStartEndTime(read_event[0]) * 1e-6));
-    // dwt_kernel_time.push_back((double)(getStartEndTime(kernel_event[0]) * 1e-6));
-    // genfpid_kernel_time.push_back((double)(getStartEndTime(kernel_event[1]) * 1e-6));
+    genfpid_kernel_time.push_back((double)(getStartEndTime(kernel_event[0]) * 1e-6));
 
 
     /* Release all events */
     clReleaseEvent(kernel_event[0]);
-    // clReleaseEvent(kernel_event[1]);
     clReleaseEvent(read_event[0]);
     clReleaseEvent(write_event[0]);
 
@@ -377,8 +370,7 @@ void print_executed_time()
         printf("Total time:           %0.3f ms \n", total_time[i] );
         printf("Transfer write time:  %0.3f ms \n", write_transfer_time[i]);
         printf("Transfer read time:   %0.3f ms \n", read_transfer_time[i]);
-        // printf("Kernel time dwt:      %0.3f ms \n", dwt_kernel_time[i]);
-        // printf("Kernel time gen_fpid: %0.3f ms \n", genfpid_kernel_time[i]);
+        printf("Kernel time gen_fpid: %0.3f ms \n", genfpid_kernel_time[i]);
     }
 }
 
@@ -393,8 +385,7 @@ void save_csv(string csvpath)
     add_collumn(&c_data, "total", total_time);
     add_collumn(&c_data, "write", write_transfer_time);
     add_collumn(&c_data, "read", read_transfer_time);
-    // add_collumn(&c_data, "dwt", dwt_kernel_time);
-    // add_collumn(&c_data, "gen_fpid", genfpid_kernel_time);
+    add_collumn(&c_data, "gen_fpid", genfpid_kernel_time);
 
     write_csv_file_v(&c_data, csvpath);
 }

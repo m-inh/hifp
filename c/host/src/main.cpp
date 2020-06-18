@@ -13,12 +13,12 @@
 #ifdef __APPLE__
 #define I_DIR "../wav"
 #define O_DIR "./fpid"
-#define CSV_DIR "../report"
+#define CSV_DIR "./report"
 #define PLATFORM_NAME "apple"
 #else
 #define I_DIR "../_wav"
 #define O_DIR "./fpid"
-#define CSV_DIR "../report"
+#define CSV_DIR "./report"
 #define PLATFORM_NAME "linux"
 #endif
 

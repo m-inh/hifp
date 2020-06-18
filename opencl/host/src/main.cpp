@@ -134,6 +134,13 @@ int main(int argc, char ** argv)
 
             init_problem(ifp, ofp);
             run();
+            
+            // for (int i=0; i<NUMFRAME; i++) {
+            //     printf("%d ", fpid[i]);
+            // }
+            // printf("\n\n");
+
+
             save_fp_to_disk(ofp, fpid);
             
             if (ifp != NULL) {
@@ -381,7 +388,6 @@ void run()
     read_transfer_time.push_back((double)(getStartEndTime(read_event[0]) * 1e-6));
     dwt_kernel_time.push_back((double)(getStartEndTime(kernel_event[0]) * 1e-6));
     genfpid_kernel_time.push_back((double)(getStartEndTime(kernel_event[1]) * 1e-6));
-
 
 
     /* Release all events */

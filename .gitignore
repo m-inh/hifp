@@ -7,4 +7,6 @@ __bin
 *.log
 log.txt
 _wav
-ok.c
+ok*
+cmp
+a.out

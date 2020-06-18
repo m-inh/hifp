@@ -69,12 +69,12 @@ int readwav8(FILE *fp, short int *wave16, unsigned short int numch);
 int dwt1(short int *wave16);
 WAVEHEADER read_wave_header(FILE *ifp);
 int read_wav_data(FILE *ifp, short int *wav_data, WAVEHEADER wave_header);
-int gen_fpid(short int *wave16, unsigned int *fpid, unsigned int *dwt_eco);
+int gen_fpid(short int *wave16, unsigned int *fpid, short int *dwt_eco);
 int save_fp_to_disk(FILE *ofp, unsigned int *fpid);
 void verify_fpid(unsigned int *fpid, unsigned int *plain_fpid, unsigned int *dwt);
 // int run_all(FILE *ifp, FILE *ofp);
 
-void init_ref_dwt(unsigned int *ref_dwt);
+void init_ref_dwt(short int *ref_dwt);
 void init_ref_fpid(unsigned int *ref_fpid);
 
 } // namespace hifp

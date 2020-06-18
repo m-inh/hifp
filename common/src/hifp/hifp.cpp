@@ -12,14 +12,14 @@ const int NUMDWTECO = NUM_DWT_ECO;
 const int NUMFRAME  = NUM_FRAME;
 
 unsigned int ref_fpid[NUMFRAME];
-unsigned int ref_dwt_eco[NUMDWTECO];
+short int ref_dwt_eco[NUMDWTECO];
 
 int dwt1(
    short int * wave16
 )
 {
-    int dwt_eco1;
-    int dwt_tmp[4];
+    short int dwt_eco1;
+    short int dwt_tmp[4];
 
     /* 1st round */
     dwt_tmp[0] = (wave16[0] + wave16[1]) / 2;
@@ -126,7 +126,7 @@ int debug_gen_fpid(
     short int *    wave16, 
     unsigned int * plain_fpid, 
     unsigned int * fpid, 
-    unsigned int * dwt_eco
+    short int * dwt_eco
 )
 {
     dwt_eco[0] = dwt1(&wave16[0]);
@@ -158,7 +158,7 @@ err:
 int gen_fpid(
     short int *    wave16, 
     unsigned int * fpid,
-    unsigned int * dwt_eco
+    short int * dwt_eco
 )
 {
     dwt_eco[0] = dwt1(&wave16[0]);
@@ -204,7 +204,7 @@ err:
 void verify_fpid(
     unsigned int * fpid, 
     unsigned int * plain_fpid, 
-    unsigned int * dwt_eco
+    short int * dwt_eco
 )
 {
     /* Initialize reference data */

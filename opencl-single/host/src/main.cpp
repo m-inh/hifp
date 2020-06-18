@@ -55,7 +55,6 @@ cl_kernel kernel[2];
 cl_mem wave16_buf = NULL;
 cl_mem fpid_buf = NULL;
 // cl_mem plain_fpid_buf = NULL;
-cl_mem dwteco_buf = NULL;
 
 const cl_uint work_dim[2] = {1, 1};
 const cl_uint num_events_in_wait_list[2] = {1, 1};
@@ -71,8 +70,6 @@ const char *CSVDIR = CSV_DIR;
 
 short int    wave16[NUMWAVE];
 unsigned int fpid[NUMFRAME];
-// unsigned int plain_fpid[NUMDWTECO];
-unsigned int dwt[NUMDWTECO];
 
 
 int song_id = 0;
@@ -116,6 +113,7 @@ int main(int argc, char ** argv)
 
     dir = opendir(IDIR);
     ASSERT(dir != NULL);
+    
 
     while ((ep = readdir(dir)) != NULL && song_id < MAX_SONGS)
     {
@@ -135,10 +133,10 @@ int main(int argc, char ** argv)
             init_problem(ifp, ofp);
             run();
             
-            // for (int i=0; i<NUMFRAME; i++) {
-            //     printf("%d ", fpid[i]);
-            // }
-            // printf("\n\n");
+            for (int i=0; i<NUMFRAME; i++) {
+                printf("%u ", fpid[i]);
+            }
+            printf("\n\n");
 
 
             save_fp_to_disk(ofp, fpid);
@@ -157,7 +155,7 @@ int main(int argc, char ** argv)
         }
     }
 
-    print_executed_time();
+    //print_executed_time();
     
     closedir(dir);
 
@@ -295,8 +293,6 @@ int init_problem(FILE *ifp, FILE *ofp)
     /* initialize all array elements to zero */
     memset(wave16, 0, sizeof(wave16));
     memset(fpid, 0, sizeof(fpid));
-    // memset(plain_fpid, 0, sizeof(plain_fpid));
-    memset(dwt, 0, sizeof(dwt));
 
     /* Load data */
     wave_header = read_wave_header(ifp);
@@ -320,8 +316,6 @@ void run()
     checkError(status, "Failed to create buffer for input");
     fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMFRAME * sizeof(unsigned int), NULL, &status);
     checkError(status, "Failed to create buffer for output 1 - fpid");
-    dwteco_buf = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
-    checkError(status, "Failed to create buffer for output 3 - dwt");
 
     
     // Set kernel arguments.
@@ -329,14 +323,8 @@ void run()
     unsigned argi = 0;
     status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &wave16_buf);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &dwteco_buf);
+    status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &fpid_buf);
     checkError(status, "Failed to set argument %d", argi - 1);    
-    /* kernel 1 */
-    // argi = 0;
-    // status = clSetKernelArg(kernel[1], argi++, sizeof(cl_mem), &dwteco_buf);
-    // checkError(status, "Failed to set argument %d", argi - 1);
-    // status = clSetKernelArg(kernel[1], argi++, sizeof(cl_mem), &fpid_buf);
-    // checkError(status, "Failed to set argument %d", argi - 1);
 
     /* start counting execution-time */
     const double start_time = getCurrentTimestamp();
@@ -348,26 +336,13 @@ void run()
 
     /* Run kernel */
     /* kernel 0 */
-    
 
     status = clEnqueueTask( queue, 
                             kernel[0],
-                            num_events_in_wait_list[0],
+                            1,
                             &write_event[0],
                             &kernel_event[0]);
-    checkError(status, "Failed to launch dwt kernel");
-
-    /* kernel 1 */
-    // status = clEnqueueNDRangeKernel(queue,
-    //                                 kernel[1],
-    //                                 work_dim[1],
-    //                                 global_work_offset[1] == 0 ? NULL : &global_work_offset[1],
-    //                                 global_work_size[1]   == 0 ? NULL : &global_work_size[1],
-    //                                 local_work_size[1]    == 0 ? NULL : &local_work_size[1],
-    //                                 num_events_in_wait_list[1],
-    //                                 &kernel_event[0],
-    //                                 &kernel_event[1]);
-    // checkError(status, "Failed to launch gen_fpid kernel");    
+    checkError(status, "Failed to launch gen_fpid kernel");
 
 
     /* Read result from device */
@@ -428,11 +403,9 @@ void save_csv(string csvpath)
 void cleanup()
 {
     clReleaseKernel(kernel[0]);
-    // clReleaseKernel(kernel[1]);
     clReleaseCommandQueue(queue);
     clReleaseProgram(program);
     clReleaseContext(context);
     clReleaseMemObject(wave16_buf);
     clReleaseMemObject(fpid_buf);
-    clReleaseMemObject(dwteco_buf);
 }

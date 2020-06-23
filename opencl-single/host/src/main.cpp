@@ -133,10 +133,10 @@ int main(int argc, char ** argv)
             init_problem(ifp, ofp);
             run();
             
-            for (int i=0; i<NUMFRAME; i++) {
-                printf("%u ", fpid[i]);
-            }
-            printf("\n\n");
+            //for (int i=0; i<NUMFRAME; i++) {
+            //    printf("%u ", fpid[i]);
+            //}
+            //printf("\n\n");
 
 
             save_fp_to_disk(ofp, fpid);

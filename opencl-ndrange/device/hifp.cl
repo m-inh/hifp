@@ -40,34 +40,16 @@ __kernel void generate_fpid(
 )
 {
     int global_id     = get_global_id(0);
-    int dwteco_offset = global_id * 32;
+    int dwteco_offset = global_id;
     int dwteco_index  = 0;
     int i = 0;
 
     /* Generate FPID */
-    if (global_id < NUMFRAME - 1) {
-        #pragma unroll
-        for (i=0; i<32; i++) {
-            dwteco_index = dwteco_offset + i;
+    dwteco_index = dwteco_offset + i;
             
-            fpid[global_id] <<= 1;
-            
-            if (dwteco16[dwteco_index] > dwteco16[dwteco_index + 1]) {
-                fpid[global_id] |= 1;
-            }
-        }
+    if (dwteco16[dwteco_index] > dwteco16[dwteco_index + 1]) {
+        fpid[global_id] = 1;
     } else {
-        #pragma unroll
-        for (i=0; i<31; i++) {
-            dwteco_index = dwteco_offset + i;
-            
-            fpid[global_id] <<= 1;
-            
-            if (dwteco16[dwteco_index] > dwteco16[dwteco_index + 1]) {
-                fpid[global_id] |= 1;
-            }
-        }
-
-        fpid[global_id] <<= 1;
+        fpid[global_id] = 0;
     }
 }

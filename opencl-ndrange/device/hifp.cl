@@ -39,17 +39,16 @@ __kernel void generate_fpid(
     __global unsigned int * restrict fpid
 )
 {
-    int global_id     = get_global_id(0);
-    int dwteco_offset = global_id;
-    int dwteco_index  = 0;
-    int i = 0;
+    int global_id = get_global_id(0);
 
-    /* Generate FPID */
-    dwteco_index = dwteco_offset + i;
-            
-    if (dwteco16[dwteco_index] > dwteco16[dwteco_index + 1]) {
-        fpid[global_id] = 1;
+    if (global_id < 4095) {
+        if (dwteco16[global_id] > dwteco16[global_id + 1]) {
+            fpid[global_id] = 1;
+        } else {
+            fpid[global_id] = 0;
+        }
     } else {
+        /* The last feature always be 0 */
         fpid[global_id] = 0;
     }
 }

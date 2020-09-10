@@ -70,7 +70,7 @@ const char *ODIR = O_DIR;
 const char *CSVDIR = CSV_DIR;
 
 short int    wave16[NUMWAVE];
-unsigned int fpid[NUMDWTECO];
+short int fpid[NUMDWTECO];
 // unsigned int plain_fpid[NUMDWTECO];
 unsigned int dwt[NUMDWTECO];
 
@@ -141,7 +141,7 @@ int main(int argc, char ** argv)
             // printf("\n\n");
 
 
-            save_fp_to_disk(ofp, fpid);
+            // save_fp_to_disk(ofp, fpid);
             
             if (ifp != NULL) {
                 fclose(ifp);
@@ -319,7 +319,7 @@ void run()
     /* Create buffer */
     wave16_buf = clCreateBuffer(context, CL_MEM_READ_ONLY, NUMWAVE * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for input");
-    fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(unsigned int), NULL, &status);
+    fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for output 1 - fpid");
     dwteco_buf = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for output 3 - dwt");
@@ -376,7 +376,7 @@ void run()
 
 
     /* Read result from device */
-    status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMDWTECO * sizeof(unsigned int), fpid, 1, &kernel_event[1], &read_event[0]);
+    status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMDWTECO * sizeof(short int), fpid, 1, &kernel_event[1], &read_event[0]);
     clWaitForEvents(1, read_event);
 
 

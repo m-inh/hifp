@@ -36,7 +36,7 @@ __kernel void dwt(
 
 __kernel void generate_fpid(
     __global const short int * restrict dwteco16,
-    __global unsigned int * restrict fpid
+    __global short int * restrict fpid
 )
 {
     int global_id = get_global_id(0);

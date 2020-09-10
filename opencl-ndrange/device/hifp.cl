@@ -15,7 +15,7 @@ __kernel void dwt(
 
     short int dwteco_tmp[8];
 
-    // Copy wave data from Global to Private
+    // Copy wave data from Global to Private (Data preserving)
     #pragma unroll
     for (int i=0; i<N_DWT; i++) {
         dwteco_tmp[i] = wave16[wave_offset + i];
@@ -41,14 +41,9 @@ __kernel void generate_fpid(
 {
     int global_id = get_global_id(0);
 
-    if (global_id < 4095) {
-        if (dwteco16[global_id] > dwteco16[global_id + 1]) {
-            fpid[global_id] = 1;
-        } else {
-            fpid[global_id] = 0;
-        }
+    if (dwteco16[global_id] > dwteco16[global_id + 1]) {
+        fpid[global_id] = 1;
     } else {
-        /* The last feature always be 0 */
         fpid[global_id] = 0;
     }
 }

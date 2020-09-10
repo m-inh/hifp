@@ -60,7 +60,7 @@ cl_mem dwteco_buf = NULL;
 const cl_uint work_dim[2] = {1, 1};
 const cl_uint num_events_in_wait_list[2] = {1, 1};
 const size_t global_work_offset[2] = {0, 0};
-const size_t global_work_size[2] = {NUMDWTECO, NUMDWTECO};
+const size_t global_work_size[2] = {NUMDWTECO, NUMDWTECO - 1};
 const size_t local_work_size[2] = {0, 0};
 
 

@@ -36,7 +36,8 @@ const char *CSVDIR = CSV_DIR;
 const char *platform = PLATFORM_NAME;
 
 vector<string> song_names;
-vector<double> total_time;
+vector<double> preprocessing_time;
+vector<double> execution_time;
 
 
 void save_csv(string csvpath);
@@ -86,26 +87,35 @@ int main(int argc, char **argv)
             ofp = fopen(ofpath, "wb");
             ASSERT(ofp != NULL);
 
+            const double start_time_preprocessing = getCurrentTimestamp();
+
             /* Prepare wave data */
             wave_header = read_wave_header(ifp);
             read_wav_data(ifp, wave16, wave_header);
 
-            const double start_time = getCurrentTimestamp();
+            const double end_time_preprocessing = getCurrentTimestamp();
+
+            const double preprocessing_time_tmp = (end_time_preprocessing - start_time_preprocessing) * 1e3;
+
+            const double start_time_execution = getCurrentTimestamp();
 
             /* Run */
             gen_fpid(wave16, fpid, dwt_eco);
 
-            const double end_time = getCurrentTimestamp();
+            const double end_time_execution = getCurrentTimestamp();
 
-            const double total_time_tmp = (end_time-start_time) * 1e3;
-            total_time.push_back(total_time_tmp);
-            // printf("%s : %lf \n", ep->d_name, total_time_tmp);
+            const double execution_time_tmp = (end_time_execution-start_time_execution) * 1e3;
+            execution_time.push_back(execution_time_tmp);
+            preprocessing_time.push_back(preprocessing_time_tmp);
 
-            // for (int i=0; i<NUMFRAME; i++) {
-            //     printf("%u ", fpid[i]);
-            // }
+            printf("preprocessing_time: %s : %lf \n", ep->d_name, preprocessing_time_tmp);
+            printf("execution_time: %s : %lf \n", ep->d_name, execution_time_tmp);
 
-            // printf("\n\n");
+            for (int i=0; i<NUMFRAME; i++) {
+                printf("%u ", fpid[i]);
+            }
+
+            printf("\n\n");
 
             // verify_fpid(fpid, NULL, NULL);
 
@@ -151,7 +161,8 @@ void save_csv(string csvpath)
     
     csv_data c_data;
     add_collumn(&c_data, "song_names", song_names);
-    add_collumn(&c_data, "total_time", total_time);
+    add_collumn(&c_data, "preprocessing_time", preprocessing_time);
+    add_collumn(&c_data, "execution_time", execution_time);
 
     write_csv_file_v(&c_data, csvpath);
 }

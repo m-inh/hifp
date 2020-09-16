@@ -60,7 +60,7 @@ cl_mem dwteco_buf = NULL;
 const cl_uint work_dim[2] = {1, 1};
 const cl_uint num_events_in_wait_list[2] = {1, 1};
 const size_t global_work_offset[2] = {0, 0};
-const size_t global_work_size[2] = {NUMDWTECO, NUMDWTECO - 1};
+const size_t global_work_size[2] = {NUMDWTECO, NUMFRAME};
 const size_t local_work_size[2] = {0, 0};
 
 
@@ -70,7 +70,7 @@ const char *ODIR = O_DIR;
 const char *CSVDIR = CSV_DIR;
 
 short int    wave16[NUMWAVE];
-short int fpid[NUMDWTECO];
+short int fpid[NUMFRAME];
 // unsigned int plain_fpid[NUMDWTECO];
 unsigned int dwt[NUMDWTECO];
 
@@ -141,7 +141,7 @@ int main(int argc, char ** argv)
             // printf("\n\n");
 
 
-            // save_fp_to_disk(ofp, fpid);
+            save_fp_to_disk(ofp, fpid);
             
             if (ifp != NULL) {
                 fclose(ifp);
@@ -319,7 +319,7 @@ void run()
     /* Create buffer */
     wave16_buf = clCreateBuffer(context, CL_MEM_READ_ONLY, NUMWAVE * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for input");
-    fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
+    fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMFRAME * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for output 1 - fpid");
     dwteco_buf = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for output 3 - dwt");
@@ -349,7 +349,7 @@ void run()
 
     /* Run kernel */
     /* kernel 0 */
-    
+
 
     status = clEnqueueNDRangeKernel(queue,
                                     kernel[0],
@@ -376,7 +376,7 @@ void run()
 
 
     /* Read result from device */
-    status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMDWTECO * sizeof(short int), fpid, 1, &kernel_event[1], &read_event[0]);
+    status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMFRAME * sizeof(short int), fpid, 1, &kernel_event[1], &read_event[0]);
     clWaitForEvents(1, read_event);
 
 

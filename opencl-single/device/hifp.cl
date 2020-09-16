@@ -21,10 +21,9 @@ __kernel void generate_fpid(
     __global const short int * restrict wave16,
     __global unsigned int * restrict fpid
 ) {
-    short int low_wave[NUMDWTECO];
+    short int low_wave[NUMDWTECO+1];
 
     for (int i=0; i<NUMDWTECO; i++) {
-        // get the first 8-wave of each 32 wave-offset
         short int wave[8];
         for (int j=0; j<8; j++) {
             wave[j] = wave16[i*32 + j];
@@ -35,24 +34,13 @@ __kernel void generate_fpid(
 
     for (int i=0; i<NUMFRAME; i++) {
         fpid[i] = 0;
-        if (i < NUMFRAME - 1) {
-            for (int j=0; j<32; j++) {
-                fpid[i] <<= 1;
-
-                if (low_wave[i*32 + j] > low_wave[i*32 + j + 1]){
-                    fpid[i] |= 1;
-                }
-            }
-        } else {
-            for (int j=0; j<31; j++) {
-                fpid[i] <<= 1;
-
-                if (low_wave[i*32 + j] > low_wave[i*32 + j + 1]){
-                    fpid[i] |= 1;
-                }
-            }
-
+        
+        for (int j=0; j<32; j++) {
             fpid[i] <<= 1;
+
+            if (low_wave[i*32 + j] > low_wave[i*32 + j + 1]){
+                fpid[i] |= 1;
+            }
         }
     }
 }

@@ -41,9 +41,16 @@ __kernel void generate_fpid(
 {
     int global_id = get_global_id(0);
 
+    for (int i=0; i<NUMFRAME; i++) {
+        
+    }
+
     if (dwteco16[global_id] > dwteco16[global_id + 1]) {
         fpid[global_id] = 1;
     } else {
         fpid[global_id] = 0;
     }
 }
+
+
+

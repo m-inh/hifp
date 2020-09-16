@@ -99,13 +99,13 @@ int main(int argc, char **argv)
 
             const double total_time_tmp = (end_time-start_time) * 1e3;
             total_time.push_back(total_time_tmp);
-            printf("%s : %lf \n", ep->d_name, total_time_tmp);
+            // printf("%s : %lf \n", ep->d_name, total_time_tmp);
 
-            for (int i=0; i<NUMFRAME; i++) {
-                printf("%u ", fpid[i]);
-            }
+            // for (int i=0; i<NUMFRAME; i++) {
+            //     printf("%u ", fpid[i]);
+            // }
 
-            printf("\n\n");
+            // printf("\n\n");
 
             // verify_fpid(fpid, NULL, NULL);
 

@@ -190,6 +190,7 @@ err:
 void init_opencl()
 {
     cl_int status;
+    int choose_device = 0;
 
     printf("Initializing OpenCL \n");
 
@@ -197,6 +198,7 @@ void init_opencl()
 #ifdef __APPLE__
     platform = findPlatform("Apple");
     sprintf(platform_name, "%s", "apple");
+    choose_device = 1;
 #else
     if (!setCwdToExeDir())
     {
@@ -212,7 +214,7 @@ void init_opencl()
     }
 
     // Query the available OpenCL device.
-    cl_device_id *devices = getDevices(platform, CL_DEVICE_TYPE_GPU, &num_devices);
+    cl_device_id *devices = getDevices(platform, CL_DEVICE_TYPE_ALL, &num_devices);
 
     printf("\n");
     printf("Platform: %s\n", getPlatformName(platform).c_str());
@@ -224,7 +226,7 @@ void init_opencl()
     }
 
     // Choose 1st device
-    device = devices[0];
+    device = devices[choose_device];
 
     int err;
     err = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE,

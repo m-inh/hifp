@@ -4,52 +4,61 @@
 #define N_DWT 8          /* Number of wave samples when conducting dwt */
 
 
-
-__kernel void dwt(
-    __global const short int * restrict wave16,
-    __global short int * restrict dwteco16
+__kernel void generate_fpid(
+    __global const short int * restrict wave,
+    __global short int * restrict fpid,
+    __local short int * dwtwave
 )
 {
-    int global_id  = get_global_id(0);
-    int wave_offset = global_id * 32;
+    int gid  = get_global_id(0);
+    int lid = get_local_id(0);
+    int group_id = get_group_id(0);
+    // int group_size = get_local_size(0);
+    
+    
+    // dwt
+    for (int i=0; i<32; i++) {
+        int fpid_offset = lid * 32;
+        
+        for (int j=0; j<32; j++) {
+            int wave_offset = (fpid_offset + j) * 32;
 
-    short int dwteco_tmp[8];
+            short int dwtwave_tmp[8];
+            
+            #pragma unroll
+            for (int k=0; k<8; k++) {
+                dwtwave_tmp[k] = wave[wave_offset + k];
+            }
 
-    // Copy wave data from Global to Private (Data preserving)
-    #pragma unroll
-    for (int i=0; i<N_DWT; i++) {
-        dwteco_tmp[i] = wave16[wave_offset + i];
-    }
+            /* 3-stages HAAR wavelet transform */
+            #pragma unroll
+            for (int k=8; k>1; k/=2) {
+                for (int l=0; l<k/2; l++) {
+                    dwtwave_tmp[l] = (dwtwave_tmp[l*2] + dwtwave_tmp[l*2 + 1]) / 2;
+                }
+            }
 
-    /* 3-stages HAAR wavelet transform */
-    #pragma unroll
-    for (int i=N_DWT; i>1; i/=2) {
-        for (int j=0; j<i/2; j++) {
-            dwteco_tmp[j] = (dwteco_tmp[j*2] + dwteco_tmp[j*2 + 1]) / 2;
+            dwtwave[fpid_offset+j] = dwtwave_tmp[0];
         }
     }
 
-    dwteco16[global_id] = dwteco_tmp[0];
-}
+    barrier(CLK_LOCAL_MEM_FENCE);
 
 
+    // feature extraction
+    for (int i=0; i<32; i++) {
+        int fpid_offset = lid * 32;
 
-__kernel void generate_fpid(
-    __global const short int * restrict dwteco16,
-    __global short int * restrict fpid
-)
-{
-    int global_id = get_global_id(0);
-
-    for (int i=0; i<NUMFRAME; i++) {
-        
+        for (int j=0; j<32; j++) {
+            if (dwtwave[fpid_offset+j] > dwtwave[fpid_offset+j+1]) {
+                fpid[fpid_offset+j] = 1;
+            } else {
+                fpid[fpid_offset+j] = 0;
+            }
+        }
     }
 
-    if (dwteco16[global_id] > dwteco16[global_id + 1]) {
-        fpid[global_id] = 1;
-    } else {
-        fpid[global_id] = 0;
-    }
+
 }
 
 

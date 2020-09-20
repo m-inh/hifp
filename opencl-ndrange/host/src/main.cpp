@@ -57,11 +57,11 @@ cl_mem fpid_buf = NULL;
 // cl_mem plain_fpid_buf = NULL;
 cl_mem dwteco_buf = NULL;
 
-const cl_uint work_dim[2] = {1, 1};
-const cl_uint num_events_in_wait_list[2] = {1, 1};
-const size_t global_work_offset[2] = {0, 0};
-const size_t global_work_size[2] = {NUMDWTECO, NUMFRAME};
-const size_t local_work_size[2] = {0, 0};
+const cl_uint work_dim[1] = {1};
+const cl_uint num_events_in_wait_list[1] = {1};
+const size_t global_work_offset[1] = {0};
+const size_t global_work_size[1] = {128};
+const size_t local_work_size[1] = {128};
 
 
 // Problem data
@@ -70,7 +70,7 @@ const char *ODIR = O_DIR;
 const char *CSVDIR = CSV_DIR;
 
 short int    wave16[NUMWAVE];
-short int fpid[NUMFRAME];
+short int fpid[NUMDWTECO];
 // unsigned int plain_fpid[NUMDWTECO];
 unsigned int dwt[NUMDWTECO];
 
@@ -80,7 +80,7 @@ vector<string> song_names;
 vector<double> total_time;
 vector<double> write_transfer_time;
 vector<double> read_transfer_time;
-vector<double> dwt_kernel_time;
+// vector<double> dwt_kernel_time;
 vector<double> genfpid_kernel_time;
 
 // Function prototypes
@@ -92,6 +92,12 @@ void print_executed_time();
 void save_csv(string csvpath);
 
 
+// device
+size_t local_size;
+size_t local_mem_size;
+
+
+unsigned int c_fpid[128];
 
 int main(int argc, char ** argv)
 {
@@ -135,13 +141,18 @@ int main(int argc, char ** argv)
             init_problem(ifp, ofp);
             run();
             
-            // for (int i=0; i<NUMFRAME; i++) {
-            //     printf("%d ", fpid[i]);
-            // }
-            // printf("\n\n");
+            for (int i=0; i<NUMDWTECO; i++) {
+                printf("%hu ", fpid[i]);
+            }
+            printf("\n\n");
 
+            for (int i=0; i<128; i++) {
+                printf("%u ", c_fpid[i]);
+            }
 
-            save_fp_to_disk(ofp, fpid);
+            printf("\n\n");
+
+            save_fp_to_disk(ofp, c_fpid);
             
             if (ifp != NULL) {
                 fclose(ifp);
@@ -201,7 +212,7 @@ void init_opencl()
     }
 
     // Query the available OpenCL device.
-    cl_device_id *devices = getDevices(platform, CL_DEVICE_TYPE_ALL, &num_devices);
+    cl_device_id *devices = getDevices(platform, CL_DEVICE_TYPE_GPU, &num_devices);
 
     printf("\n");
     printf("Platform: %s\n", getPlatformName(platform).c_str());
@@ -215,9 +226,22 @@ void init_opencl()
     // Choose 1st device
     device = devices[0];
 
+    int err;
+    err = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE,
+                          sizeof(local_size), &local_size, NULL);
+    err = clGetDeviceInfo(device, CL_DEVICE_LOCAL_MEM_SIZE,
+                          sizeof(local_mem_size), &local_mem_size, NULL);
+    if (err < 0)
+    {
+        perror("Couldn't obtain device information");
+        exit(1);
+    }
+
     printf("\n");
     printf("Choose device:\n");
     printf("- %s (id: %d)\n", getDeviceName(device).c_str(), device);
+    printf("CL_DEVICE_MAX_WORK_GROUP_SIZE: %d  \n", local_size);
+    printf("CL_DEVICE_LOCAL_MEM_SIZE:      %d  \n", local_mem_size);
 
     // Create the context.
     context = clCreateContext(NULL, 1, &device, &oclContextCallback, NULL, &status);
@@ -257,27 +281,20 @@ void init_opencl()
     checkError(status, "Failed to create command queue_2");
 
     // Kernel.
-    kernel[0] = clCreateKernel(program, "dwt", &status);
-    kernel[1] = clCreateKernel(program, "generate_fpid", &status);
+    kernel[0] = clCreateKernel(program, "generate_fpid", &status);
     checkError(status, "Failed to create kernel");
 
     /* Print kernel's configuration */
     printf("\n");
     printf("Launching for device:      %d  \n", device);
-    printf("- DWT kernel:      \n");
+    
+    printf("\n");
+    printf("- gen_fpid kernel:        \n");
     printf("+ work_dim:                %u  \n", work_dim[0]);
     printf("+ num_events_in_wait_list: %u  \n", num_events_in_wait_list[0]);
     printf("+ global_work_offset:      %lu \n", global_work_offset[0]);
     printf("+ global_work_size:        %lu \n", global_work_size[0]);
     printf("+ local_work_size:         %lu \n", local_work_size[0]);
-    
-    printf("\n");
-    printf("- gen_fpid kernel:        \n");
-    printf("+ work_dim:                %u  \n", work_dim[1]);
-    printf("+ num_events_in_wait_list: %u  \n", num_events_in_wait_list[1]);
-    printf("+ global_work_offset:      %lu \n", global_work_offset[1]);
-    printf("+ global_work_size:        %lu \n", global_work_size[1]);
-    printf("+ local_work_size:         %lu \n", local_work_size[1]);
 }
 
 
@@ -313,16 +330,16 @@ void run()
     cl_int status;
     cl_event write_event[1];
     cl_event read_event[1];
-    cl_event kernel_event[2];
+    cl_event kernel_event[1];
 
 
     /* Create buffer */
     wave16_buf = clCreateBuffer(context, CL_MEM_READ_ONLY, NUMWAVE * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for input");
-    fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMFRAME * sizeof(short int), NULL, &status);
+    fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for output 1 - fpid");
-    dwteco_buf = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
-    checkError(status, "Failed to create buffer for output 3 - dwt");
+    // fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
+    // checkError(status, "Failed to create buffer for output 1 - fpid");
 
     
     // Set kernel arguments.
@@ -330,14 +347,12 @@ void run()
     unsigned argi = 0;
     status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &wave16_buf);
     checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &dwteco_buf);
+    status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &fpid_buf);
+    checkError(status, "Failed to set argument %d", argi - 1);
+    status = clSetKernelArg(kernel[0], argi++, 4097 * sizeof(cl_mem), NULL);
     checkError(status, "Failed to set argument %d", argi - 1);    
-    /* kernel 1 */
-    argi = 0;
-    status = clSetKernelArg(kernel[1], argi++, sizeof(cl_mem), &dwteco_buf);
-    checkError(status, "Failed to set argument %d", argi - 1);
-    status = clSetKernelArg(kernel[1], argi++, sizeof(cl_mem), &fpid_buf);
-    checkError(status, "Failed to set argument %d", argi - 1);
+    
+
 
     /* start counting execution-time */
     const double start_time = getCurrentTimestamp();
@@ -350,7 +365,6 @@ void run()
     /* Run kernel */
     /* kernel 0 */
 
-
     status = clEnqueueNDRangeKernel(queue,
                                     kernel[0],
                                     work_dim[0],
@@ -360,23 +374,11 @@ void run()
                                     num_events_in_wait_list[0],
                                     &write_event[0],
                                     &kernel_event[0]);
-    checkError(status, "Failed to launch dwt kernel");
-
-    /* kernel 1 */
-    status = clEnqueueNDRangeKernel(queue,
-                                    kernel[1],
-                                    work_dim[1],
-                                    global_work_offset[1] == 0 ? NULL : &global_work_offset[1],
-                                    global_work_size[1]   == 0 ? NULL : &global_work_size[1],
-                                    local_work_size[1]    == 0 ? NULL : &local_work_size[1],
-                                    num_events_in_wait_list[1],
-                                    &kernel_event[0],
-                                    &kernel_event[1]);
-    checkError(status, "Failed to launch gen_fpid kernel");    
+    checkError(status, "Failed to launch generate_fpid kernel"); 
 
 
     /* Read result from device */
-    status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMFRAME * sizeof(short int), fpid, 1, &kernel_event[1], &read_event[0]);
+    status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMDWTECO * sizeof(short int), fpid, 1, &kernel_event[0], &read_event[0]);
     clWaitForEvents(1, read_event);
 
 
@@ -386,13 +388,29 @@ void run()
     total_time.push_back((end_time - start_time) * 1e3);
     write_transfer_time.push_back((double)(getStartEndTime(write_event[0]) * 1e-6));
     read_transfer_time.push_back((double)(getStartEndTime(read_event[0]) * 1e-6));
-    dwt_kernel_time.push_back((double)(getStartEndTime(kernel_event[0]) * 1e-6));
-    genfpid_kernel_time.push_back((double)(getStartEndTime(kernel_event[1]) * 1e-6));
+    genfpid_kernel_time.push_back((double)(getStartEndTime(kernel_event[0]) * 1e-6));
+
+
+    // for test
+    // compress fpid 4096 -> 128
+    memset(c_fpid, 0, sizeof(c_fpid));
+
+    for (int i=0; i<128; i++) {
+        int fpid_offset = i * 32;
+        c_fpid[i] = 0;
+        for (int j=0; j<32; j++) {
+            c_fpid[i] <<= 1;
+                
+            if (fpid[fpid_offset+j] == 1) {
+                c_fpid[i] |= 1;
+            }
+        }
+    }
+
 
 
     /* Release all events */
     clReleaseEvent(kernel_event[0]);
-    clReleaseEvent(kernel_event[1]);
     clReleaseEvent(read_event[0]);
     clReleaseEvent(write_event[0]);
 
@@ -407,7 +425,7 @@ void print_executed_time()
         printf("Total time:           %0.3f ms \n", total_time[i] );
         printf("Transfer write time:  %0.3f ms \n", write_transfer_time[i]);
         printf("Transfer read time:   %0.3f ms \n", read_transfer_time[i]);
-        printf("Kernel time dwt:      %0.3f ms \n", dwt_kernel_time[i]);
+        // printf("Kernel time dwt:      %0.3f ms \n", dwt_kernel_time[i]);
         printf("Kernel time gen_fpid: %0.3f ms \n", genfpid_kernel_time[i]);
     }
 }
@@ -423,7 +441,7 @@ void save_csv(string csvpath)
     add_collumn(&c_data, "total", total_time);
     add_collumn(&c_data, "write", write_transfer_time);
     add_collumn(&c_data, "read", read_transfer_time);
-    add_collumn(&c_data, "dwt", dwt_kernel_time);
+    // add_collumn(&c_data, "dwt", dwt_kernel_time);
     add_collumn(&c_data, "gen_fpid", genfpid_kernel_time);
 
     write_csv_file_v(&c_data, csvpath);

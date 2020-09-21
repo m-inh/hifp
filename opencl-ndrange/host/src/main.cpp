@@ -54,6 +54,7 @@ cl_kernel kernel[2];
 
 cl_mem wave16_buf = NULL;
 cl_mem fpid_buf = NULL;
+cl_mem dwtwave_buf = NULL;
 // cl_mem plain_fpid_buf = NULL;
 cl_mem dwteco_buf = NULL;
 
@@ -340,6 +341,9 @@ void run()
     checkError(status, "Failed to create buffer for input");
     fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for output 1 - fpid");
+    dwtwave_buf = clCreateBuffer(context, CL_MEM_READ_WRITE, 4097 * sizeof(short int), NULL, &status);
+    checkError(status, "Failed to create buffer for output 2 - dwtwave_buf");
+
     // fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
     // checkError(status, "Failed to create buffer for output 1 - fpid");
 
@@ -351,6 +355,7 @@ void run()
     checkError(status, "Failed to set argument %d", argi - 1);
     status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &fpid_buf);
     checkError(status, "Failed to set argument %d", argi - 1);
+    // status = clSetKernelArg(kernel[0], argi++, 4097 * sizeof(cl_mem), &dwtwave_buf);
     status = clSetKernelArg(kernel[0], argi++, 4097 * sizeof(cl_mem), NULL);
     checkError(status, "Failed to set argument %d", argi - 1);    
     

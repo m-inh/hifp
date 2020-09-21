@@ -4,16 +4,18 @@
 #define N_DWT 8          /* Number of wave samples when conducting dwt */
 
 
+__attribute__ ((reqd_work_group_size(128, 1, 1)))
 __kernel void generate_fpid(
     __global const short int * restrict wave,
-    __global short int * restrict fpid,
-    __local short int * dwtwave
+    __global short int * restrict fpid
 )
 {
     int gid  = get_global_id(0);
     int lid = get_local_id(0);
     int group_id = get_group_id(0);
     // int group_size = get_local_size(0);
+
+    __local short int dwtwave[4097];
     
     
     // dwt

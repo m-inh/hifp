@@ -229,20 +229,28 @@ void init_opencl()
     // Choose 1st device
     device = devices[choose_device];
 
+    char *driver_version;
+    driver_version = (char *)malloc(MAX_SOURCE_SIZE);
+    size_t valueSize;
     int err;
     err = clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE,
                           sizeof(local_size), &local_size, NULL);
     err = clGetDeviceInfo(device, CL_DEVICE_LOCAL_MEM_SIZE,
                           sizeof(local_mem_size), &local_mem_size, NULL);
+    clGetDeviceInfo(device, CL_DRIVER_VERSION, valueSize, &driver_version, NULL);
     if (err < 0)
     {
         perror("Couldn't obtain device information");
         exit(1);
     }
 
+    
+
     printf("\n");
     printf("Choose device:\n");
     printf("- %s (id: %d)\n", getDeviceName(device).c_str(), device);
+    
+    printf("CL_DRIVER_VERSION:             %s  \n", driver_version);
     printf("CL_DEVICE_MAX_WORK_GROUP_SIZE: %d  \n", local_size);
     printf("CL_DEVICE_LOCAL_MEM_SIZE:      %d  \n", local_mem_size);
 
@@ -356,8 +364,8 @@ void run()
     status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &fpid_buf);
     checkError(status, "Failed to set argument %d", argi - 1);
     // status = clSetKernelArg(kernel[0], argi++, 4097 * sizeof(cl_mem), &dwtwave_buf);
-    status = clSetKernelArg(kernel[0], argi++, 4097 * sizeof(cl_mem), NULL);
-    checkError(status, "Failed to set argument %d", argi - 1);    
+    // status = clSetKernelArg(kernel[0], argi++, 4097 * sizeof(cl_mem), NULL);
+    // checkError(status, "Failed to set argument %d", argi - 1);    
     
 
 

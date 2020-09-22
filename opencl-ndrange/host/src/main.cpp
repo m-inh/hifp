@@ -61,8 +61,8 @@ cl_mem dwteco_buf = NULL;
 const cl_uint work_dim[1] = {1};
 const cl_uint num_events_in_wait_list[1] = {1};
 const size_t global_work_offset[1] = {0};
-const size_t global_work_size[1] = {128};
-const size_t local_work_size[1] = {128};
+const size_t global_work_size[1] = {256};
+const size_t local_work_size[1] = {256};
 
 
 // Problem data

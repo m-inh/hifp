@@ -4,7 +4,7 @@
 #define N_DWT 8          /* Number of wave samples when conducting dwt */
 
 
-// __attribute__ ((reqd_work_group_size(128, 1, 1)))
+__attribute__ ((reqd_work_group_size(256, 1, 1)))
 __kernel void generate_fpid(
     __global const short int * restrict wave,
     __global short int * restrict fpid
@@ -14,6 +14,8 @@ __kernel void generate_fpid(
     int lid = get_local_id(0);
     int group_id = get_group_id(0);
     int group_size = get_local_size(0); // number of songs, 1 song => 1 work-group
+
+    int num_of_chunks = 4096 / group_size;
 
     __local short int dwtwave[4097];
     
@@ -26,9 +28,9 @@ __kernel void generate_fpid(
     
 
     // dwt
-    int fpid_offset = lid * 32;
+    int fpid_offset = lid * num_of_chunks;
         
-    for (int j=0; j<32; j++) {
+    for (int j=0; j<num_of_chunks; j++) {
         int wave_offset = wave_global_offset + ((fpid_offset + j) * 32);
 
         short int dwtwave_tmp[8];
@@ -53,7 +55,7 @@ __kernel void generate_fpid(
 
 
     // feature extraction
-    for (int j=0; j<32; j++) {
+    for (int j=0; j<num_of_chunks; j++) {
         if (dwtwave[fpid_offset+j] > dwtwave[fpid_offset+j+1]) {
             fpid[fpid_global_offset+fpid_offset+j] = 1;
         } else {

@@ -40,6 +40,7 @@ const int NUMWAVE = NUM_WAVE;
 const int NUMDWTECO = NUM_DWT_ECO;
 const int NUMFRAME = NUM_FRAME;
 const int num_songs = 2;
+const int work_size = 256;
 
 // OpenCL runtime configuration
 string binary_file = "hifp.aocx";
@@ -61,8 +62,8 @@ cl_mem dwteco_buf = NULL;
 const cl_uint work_dim[1] = {1};
 const cl_uint num_events_in_wait_list[1] = {1};
 const size_t global_work_offset[1] = {0};
-const size_t global_work_size[1] = {128*num_songs};
-const size_t local_work_size[1] = {128};
+const size_t global_work_size[1] = {work_size*num_songs};
+const size_t local_work_size[1] = {work_size};
 
 // Problem data
 const char *IDIR = I_DIR;
@@ -193,21 +194,17 @@ int main(int argc, char ** argv)
     // for test
     // compress fpid 4096 -> 128
 
-    // for (int l=0; l<num_songs; l++) {
-    //     int song_offset = l * 128;
-    //     for (int i=0; i<128; i++) {
-    //         int fpid_offset = song_offset + (i * 32);
-    //         for (int j=0; j<32; j++) {
-    //             c_fpid[fpid_offset] <<= 1;
-                    
-    //             if (fpid[fpid_offset+j] == 1) {
-    //                 c_fpid[fpid_offset] |= 1;
-    //             }
-    //         }
+    for (int i=0; i<num_songs; i++) {
+        for (int j=0; j<128; j++) {
+            for (int k=0; k<32; k++) {
+                c_fpid[i*128 + j] <<= 1;
 
-    //     }
-    // }
-
+                if (fpid[i*4096 + j*32 + k] == 1) {
+                    c_fpid[i*128 + j] |= 1;
+                }
+            }
+        }
+    }
 
 
     if (ifp != NULL) {
@@ -221,6 +218,13 @@ int main(int argc, char ** argv)
         int fpid_offset = i * 4096;
         for (int j=0; j<4096; j++) {
             printf("%hd ", fpid[fpid_offset + j]);
+        }
+        printf("\n\n");
+    }
+
+    for (int i=0; i<num_songs; i++) {
+        for (int j=0; j<128; j++) {
+            printf("%u ", c_fpid[i*128 + j]);
         }
         printf("\n\n");
     }

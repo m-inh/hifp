@@ -239,16 +239,12 @@ void init_opencl()
         exit(1);
     }
 
-    
-
     printf("\n");
     printf("Choose device:\n");
     printf("- %s (id: %d)\n", getDeviceName(device).c_str(), device);
     
-    printf("CL_DRIVER_VERSION:             %s  \n", driver_version);
     printf("CL_DEVICE_MAX_WORK_GROUP_SIZE: %d  \n", local_size);
     printf("CL_DEVICE_LOCAL_MEM_SIZE:      %d  \n", local_mem_size);
-    printf("CL_DEVICE_MAX_WORK_ITEM_SIZES: %d  \n", work_item_size);
 
     // Create the context.
     context = clCreateContext(NULL, 1, &device, &oclContextCallback, NULL, &status);

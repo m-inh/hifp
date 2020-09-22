@@ -1,4 +1,10 @@
-__attribute__ ((reqd_work_group_size(128, 1, 1)))
+#define NUMWAVE   131072 /* Number of samples of PCM data */
+#define NUMDWTECO 4096   /* Number of bits per FPIDs */
+#define NUMFRAME  128    /* Number of frames of generated FPID data */
+#define N_DWT 8          /* Number of wave samples when conducting dwt */
+
+
+// __attribute__ ((reqd_work_group_size(128, 1, 1)))
 __kernel void generate_fpid(
     __global const short int * restrict wave,
     __global short int * restrict fpid
@@ -7,16 +13,23 @@ __kernel void generate_fpid(
     int gid  = get_global_id(0);
     int lid = get_local_id(0);
     int group_id = get_group_id(0);
-    // int group_size = get_local_size(0);
+    int group_size = get_local_size(0); // number of songs, 1 song => 1 work-group
 
     __local short int dwtwave[4097];
     
+    int wave_global_offset = group_id * 131072;
+    int fpid_global_offset = group_id * 4096;
+
+
+
+    // int fpid_local_offset = lid * 32;
     
+
     // dwt
     int fpid_offset = lid * 32;
         
     for (int j=0; j<32; j++) {
-        int wave_offset = (fpid_offset + j) * 32;
+        int wave_offset = wave_global_offset + ((fpid_offset + j) * 32);
 
         short int dwtwave_tmp[8];
         
@@ -42,9 +55,9 @@ __kernel void generate_fpid(
     // feature extraction
     for (int j=0; j<32; j++) {
         if (dwtwave[fpid_offset+j] > dwtwave[fpid_offset+j+1]) {
-            fpid[fpid_offset+j] = 1;
+            fpid[fpid_global_offset+fpid_offset+j] = 1;
         } else {
-            fpid[fpid_offset+j] = 0;
+            fpid[fpid_global_offset+fpid_offset+j] = 0;
         }
     }
 

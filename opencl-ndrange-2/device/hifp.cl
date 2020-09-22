@@ -1,35 +1,24 @@
-#define NUMWAVE   131072 /* Number of samples of PCM data */
-#define NUMDWTECO 4096   /* Number of bits per FPIDs */
-#define NUMFRAME  128    /* Number of frames of generated FPID data */
-#define N_DWT 8          /* Number of wave samples when conducting dwt */
-
-
 __attribute__ ((reqd_work_group_size(256, 1, 1)))
 __kernel void generate_fpid(
     __global const short int * restrict wave,
     __global short int * restrict fpid
 )
 {
-    int gid  = get_global_id(0);
     int lid = get_local_id(0);
     int group_id = get_group_id(0);
-    int group_size = get_local_size(0); // number of songs, 1 song => 1 work-group
+    int group_size = get_local_size(0);
 
     int num_of_chunks = 4096 / group_size;
 
     __local short int dwtwave[4097];
     
     int wave_global_offset = group_id * 131072;
-    int fpid_global_offset = group_id * 4096;
-
-
-
-    // int fpid_local_offset = lid * 32;
-    
+    int fpid_global_offset = group_id * 4096;    
 
     // dwt
     int fpid_offset = lid * num_of_chunks;
         
+    #pragma unroll
     for (int j=0; j<num_of_chunks; j++) {
         int wave_offset = wave_global_offset + ((fpid_offset + j) * 32);
 
@@ -43,6 +32,7 @@ __kernel void generate_fpid(
         /* 3-stages HAAR wavelet transform */
         #pragma unroll
         for (int k=8; k>1; k/=2) {
+            #pragma unroll
             for (int l=0; l<k/2; l++) {
                 dwtwave_tmp[l] = (dwtwave_tmp[l*2] + dwtwave_tmp[l*2 + 1]) / 2;
             }
@@ -53,8 +43,8 @@ __kernel void generate_fpid(
 
     barrier(CLK_LOCAL_MEM_FENCE);
 
-
     // feature extraction
+    #pragma unroll
     for (int j=0; j<num_of_chunks; j++) {
         if (dwtwave[fpid_offset+j] > dwtwave[fpid_offset+j+1]) {
             fpid[fpid_global_offset+fpid_offset+j] = 1;
@@ -62,9 +52,6 @@ __kernel void generate_fpid(
             fpid[fpid_global_offset+fpid_offset+j] = 0;
         }
     }
-
-
 }
-
 
 

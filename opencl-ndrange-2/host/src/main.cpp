@@ -160,31 +160,10 @@ int main(int argc, char ** argv)
 
             song_id++;
 
-            // run();
-            
-            // for (int i=0; i<NUMDWTECO; i++) {
-            //     printf("%hu ", fpid[i]);
-            // }
-            // printf("\n\n");
-
-            // for (int i=0; i<128; i++) {
-            //     printf("%u ", c_fpid[i]);
-            // }
-
-            // printf("\n\n");
-
-            // save_fp_to_disk(ofp, c_fpid);
-            
-            // if (ifp != NULL) {
-            //     fclose(ifp);
-            //     ifp = NULL;
-            // }
-
             if (ofp != NULL) {
                 fclose(ofp);
                 ofp = NULL;
             }
-            
             
         }
     }
@@ -194,44 +173,42 @@ int main(int argc, char ** argv)
     // for test
     // compress fpid 4096 -> 128
 
-    for (int i=0; i<num_songs; i++) {
-        for (int j=0; j<128; j++) {
-            for (int k=0; k<32; k++) {
-                c_fpid[i*128 + j] <<= 1;
+    // for (int i=0; i<num_songs; i++) {
+    //     for (int j=0; j<128; j++) {
+    //         for (int k=0; k<32; k++) {
+    //             c_fpid[i*128 + j] <<= 1;
 
-                if (fpid[i*4096 + j*32 + k] == 1) {
-                    c_fpid[i*128 + j] |= 1;
-                }
-            }
-        }
-    }
+    //             if (fpid[i*4096 + j*32 + k] == 1) {
+    //                 c_fpid[i*128 + j] |= 1;
+    //             }
+    //         }
+    //     }
+    // }
 
+    // for (int i=0; i<num_songs; i++) {
+    //     int fpid_offset = i * 4096;
+    //     for (int j=0; j<4096; j++) {
+    //         printf("%hd ", fpid[fpid_offset + j]);
+    //     }
+    //     printf("\n\n");
+    // }
+
+    // for (int i=0; i<num_songs; i++) {
+    //     for (int j=0; j<128; j++) {
+    //         printf("%u ", c_fpid[i*128 + j]);
+    //     }
+    //     printf("\n\n");
+    // }
+
+    printf("\n");
+    printf("number_of_songs: %d \n", num_songs);
+
+    print_executed_time();
 
     if (ifp != NULL) {
         fclose(ifp);
         ifp = NULL;
     }
-
-
-
-    for (int i=0; i<num_songs; i++) {
-        int fpid_offset = i * 4096;
-        for (int j=0; j<4096; j++) {
-            printf("%hd ", fpid[fpid_offset + j]);
-        }
-        printf("\n\n");
-    }
-
-    for (int i=0; i<num_songs; i++) {
-        for (int j=0; j<128; j++) {
-            printf("%u ", c_fpid[i*128 + j]);
-        }
-        printf("\n\n");
-    }
-
-
-
-    print_executed_time();
     
     closedir(dir);
 
@@ -302,7 +279,7 @@ void init_opencl()
         exit(1);
     }
 
-    printf("\n");
+    printf("\n\n");
     printf("Choose device:\n");
     printf("- %s (id: %d)\n", getDeviceName(device).c_str(), device);
     printf("CL_DEVICE_MAX_WORK_GROUP_SIZE: %d  \n", local_size);

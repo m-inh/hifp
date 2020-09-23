@@ -1,5 +1,7 @@
 #define MAX_SOURCE_SIZE (0x100000)
 #define MAX_SONGS 2000
+#define NUM_SONGS 2
+#define WORK_SIZE 256
 
 #ifdef __APPLE__
 #define I_DIR "../wav"
@@ -39,8 +41,8 @@ using namespace my_utils;
 const int NUMWAVE = NUM_WAVE;
 const int NUMDWTECO = NUM_DWT_ECO;
 const int NUMFRAME = NUM_FRAME;
-const int num_songs = 2;
-const int work_size = 256;
+const int num_songs = NUM_SONGS;
+const int work_size = WORK_SIZE;
 
 // OpenCL runtime configuration
 string binary_file = "hifp.aocx";

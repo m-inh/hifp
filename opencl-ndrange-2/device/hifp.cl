@@ -1,3 +1,6 @@
+#define GROUP_SIZE 256
+
+__attribute__ ((reqd_work_group_size(GROUP_SIZE, 1, 1)))
 __kernel void generate_fpid(
     __global const short int * restrict wave,
     __global short int * restrict fpid
@@ -5,9 +8,8 @@ __kernel void generate_fpid(
 {
     int lid = get_local_id(0);
     int group_id = get_group_id(0);
-    int group_size = get_local_size(0);
 
-    int num_of_chunks = 4096 / group_size;
+    int num_of_chunks = 4096 / GROUP_SIZE;
 
     __local short int dwtwave[4097];
     
@@ -52,5 +54,3 @@ __kernel void generate_fpid(
         }
     }
 }
-
-

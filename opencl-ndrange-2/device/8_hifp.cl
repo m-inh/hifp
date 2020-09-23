@@ -1,3 +1,4 @@
+__attribute__ ((reqd_work_group_size(16, 1, 1)))
 __kernel void generate_fpid(
     __global const short int * restrict wave,
     __global short int * restrict fpid

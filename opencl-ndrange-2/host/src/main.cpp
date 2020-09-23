@@ -1,7 +1,7 @@
-#define MAX_SOURCE_SIZE (0x100000)
-#define MAX_SONGS 2000
-#define NUM_SONGS 2
+#define NUM_SONGS 1
 #define WORK_SIZE 256
+
+#define MAX_SOURCE_SIZE (0x100000)
 
 #ifdef __APPLE__
 #define I_DIR "../wav"
@@ -133,7 +133,7 @@ int main(int argc, char ** argv)
     dir = opendir(IDIR);
     ASSERT(dir != NULL);
 
-    while ((ep = readdir(dir)) != NULL && song_id < MAX_SONGS && song_id < num_songs)
+    while ((ep = readdir(dir)) != NULL && song_id < num_songs)
     {
         if (ep->d_type == DT_REG)
         {

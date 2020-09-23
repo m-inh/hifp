@@ -17,3 +17,18 @@ echo "256 done"
 
 aoc -march=emulator device/128_hifp.cl -o bin_128/hifp.aocx
 echo "128 done"
+
+aoc -march=emulator device/64_hifp.cl -o bin_64/hifp.aocx
+echo "64 done"
+
+aoc -march=emulator device/32_hifp.cl -o bin_32/hifp.aocx
+echo "32 done"
+
+aoc -march=emulator device/16_hifp.cl -o bin_16/hifp.aocx
+echo "16 done"
+
+aoc -march=emulator device/8_hifp.cl -o bin_8/hifp.aocx
+echo "8 done"
+
+echo "----------------------------"
+echo "all done"

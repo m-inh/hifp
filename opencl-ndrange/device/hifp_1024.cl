@@ -1,4 +1,4 @@
-#define GROUP_SIZE 128
+#define GROUP_SIZE 1024
 
 __attribute__ ((reqd_work_group_size(GROUP_SIZE, 1, 1)))
 __kernel void generate_fpid(
@@ -9,11 +9,9 @@ __kernel void generate_fpid(
     int lid = get_local_id(0);
     int num_chunks = 4096 / GROUP_SIZE;
     __local short int dwtwave[4097];
-    
+    int fpid_offset = lid * num_chunks;
     
     // dwt
-    int fpid_offset = lid * num_chunks;
-        
     for (int j=0; j<num_chunks; j++) {
         int wave_offset = (fpid_offset + j) * 32;
 

@@ -1,5 +1,7 @@
-#define MAX_SOURCE_SIZE (0x100000)
-#define MAX_SONGS 2000
+#define NUM_SONGS 1
+#define WORK_SIZE 128
+
+#define MAX_SOURCE_SIZE 1048576
 
 #ifdef __APPLE__
 #define I_DIR "../wav"
@@ -40,6 +42,9 @@ const int NUMWAVE = NUM_WAVE;
 const int NUMDWTECO = NUM_DWT_ECO;
 const int NUMFRAME = NUM_FRAME;
 
+const int num_songs = NUM_SONGS;
+const int work_size = WORK_SIZE;
+
 // OpenCL runtime configuration
 string binary_file = "hifp.aocx";
 cl_platform_id platform = NULL;
@@ -61,8 +66,8 @@ cl_mem dwteco_buf = NULL;
 const cl_uint work_dim[1] = {1};
 const cl_uint num_events_in_wait_list[1] = {1};
 const size_t global_work_offset[1] = {0};
-const size_t global_work_size[1] = {256};
-const size_t local_work_size[1] = {256};
+const size_t global_work_size[1] = {work_size*num_songs};
+const size_t local_work_size[1] = {work_size};
 
 
 // Problem data
@@ -70,9 +75,8 @@ const char *IDIR = I_DIR;
 const char *ODIR = O_DIR;
 const char *CSVDIR = CSV_DIR;
 
-short int    wave16[NUMWAVE];
+short int wave16[NUMWAVE];
 short int fpid[NUMDWTECO];
-// unsigned int plain_fpid[NUMDWTECO];
 unsigned int dwt[NUMDWTECO];
 
 
@@ -81,7 +85,6 @@ vector<string> song_names;
 vector<double> total_time;
 vector<double> write_transfer_time;
 vector<double> read_transfer_time;
-// vector<double> dwt_kernel_time;
 vector<double> genfpid_kernel_time;
 
 // Function prototypes
@@ -124,7 +127,7 @@ int main(int argc, char ** argv)
     dir = opendir(IDIR);
     ASSERT(dir != NULL);
 
-    while ((ep = readdir(dir)) != NULL && song_id < MAX_SONGS)
+    while ((ep = readdir(dir)) != NULL && song_id < num_songs)
     {
         if (ep->d_type == DT_REG)
         {
@@ -141,11 +144,27 @@ int main(int argc, char ** argv)
 
             init_problem(ifp, ofp);
             run();
-            
-            for (int i=0; i<NUMDWTECO; i++) {
-                printf("%hu ", fpid[i]);
+
+            // compress fpid: 4096 -> 128
+            memset(c_fpid, 0, sizeof(c_fpid));
+
+            for (int i=0; i<128; i++) {
+                int fpid_offset = i * 32;
+                c_fpid[i] = 0;
+                for (int j=0; j<32; j++) {
+                    c_fpid[i] <<= 1;
+                        
+                    if (fpid[fpid_offset+j] == 1) {
+                        c_fpid[i] |= 1;
+                    }
+                }
             }
-            printf("\n\n");
+            
+            // print FPID for verification
+            // for (int i=0; i<NUMDWTECO; i++) {
+            //     printf("%hu ", fpid[i]);
+            // }
+            // printf("\n\n");
 
             for (int i=0; i<128; i++) {
                 printf("%u ", c_fpid[i]);
@@ -153,7 +172,7 @@ int main(int argc, char ** argv)
 
             printf("\n\n");
 
-            save_fp_to_disk(ofp, c_fpid);
+            // save_fp_to_disk(ofp, c_fpid);
             
             if (ifp != NULL) {
                 fclose(ifp);
@@ -175,7 +194,7 @@ int main(int argc, char ** argv)
 
     get_date_time((char *) current_datetime);
     sprintf(csvpath, "%s/%s.%s.%s_%u.csv", CSVDIR, "opencl", platform_name, current_datetime, (int) round(getCurrentTimestamp()));
-    save_csv(csvpath);
+    // save_csv(csvpath);
 
     cleanup();
 
@@ -343,10 +362,6 @@ void run()
     checkError(status, "Failed to create buffer for output 1 - fpid");
     dwtwave_buf = clCreateBuffer(context, CL_MEM_READ_WRITE, 4097 * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for output 2 - dwtwave_buf");
-
-    // fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
-    // checkError(status, "Failed to create buffer for output 1 - fpid");
-
     
     // Set kernel arguments.
     /* kernel 0 */
@@ -355,9 +370,6 @@ void run()
     checkError(status, "Failed to set argument %d", argi - 1);
     status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &fpid_buf);
     checkError(status, "Failed to set argument %d", argi - 1);
-    // status = clSetKernelArg(kernel[0], argi++, 4097 * sizeof(cl_mem), &dwtwave_buf);
-    // status = clSetKernelArg(kernel[0], argi++, 4097 * sizeof(cl_mem), NULL);
-    // checkError(status, "Failed to set argument %d", argi - 1);    
     
 
 
@@ -398,23 +410,6 @@ void run()
     genfpid_kernel_time.push_back((double)(getStartEndTime(kernel_event[0]) * 1e-6));
 
 
-    // for test
-    // compress fpid 4096 -> 128
-    memset(c_fpid, 0, sizeof(c_fpid));
-
-    for (int i=0; i<128; i++) {
-        int fpid_offset = i * 32;
-        c_fpid[i] = 0;
-        for (int j=0; j<32; j++) {
-            c_fpid[i] <<= 1;
-                
-            if (fpid[fpid_offset+j] == 1) {
-                c_fpid[i] |= 1;
-            }
-        }
-    }
-
-
 
     /* Release all events */
     clReleaseEvent(kernel_event[0]);
@@ -448,7 +443,6 @@ void save_csv(string csvpath)
     add_collumn(&c_data, "total", total_time);
     add_collumn(&c_data, "write", write_transfer_time);
     add_collumn(&c_data, "read", read_transfer_time);
-    // add_collumn(&c_data, "dwt", dwt_kernel_time);
     add_collumn(&c_data, "gen_fpid", genfpid_kernel_time);
 
     write_csv_file_v(&c_data, csvpath);

@@ -8,10 +8,14 @@ __kernel void generate_fpid(
 {
     int lid = get_local_id(0);
     int num_chunks = 4096 / GROUP_SIZE;
-    __local short int dwtwave[4097];
-    int fpid_offset = lid * num_chunks;
+
+    __local short int dwtwave[4097];    
+    
     
     // dwt
+    int fpid_offset = lid * num_chunks;
+        
+    #pragma unroll
     for (int j=0; j<num_chunks; j++) {
         int wave_offset = (fpid_offset + j) * 32;
 
@@ -25,6 +29,7 @@ __kernel void generate_fpid(
         /* 3-stages HAAR wavelet transform */
         #pragma unroll
         for (int k=8; k>1; k/=2) {
+            #pragma unroll
             for (int l=0; l<k/2; l++) {
                 dwtwave_tmp[l] = (dwtwave_tmp[l*2] + dwtwave_tmp[l*2 + 1]) / 2;
             }
@@ -37,6 +42,7 @@ __kernel void generate_fpid(
 
 
     // feature extraction
+    #pragma unroll
     for (int j=0; j<num_chunks; j++) {
         if (dwtwave[fpid_offset+j] > dwtwave[fpid_offset+j+1]) {
             fpid[fpid_offset+j] = 1;

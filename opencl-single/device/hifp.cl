@@ -1,50 +1,33 @@
-#define NUMWAVE   131072 /* Number of samples of PCM data */
-#define NUMDWTECO 4096   /* Number of bits per FPIDs */
-#define NUMFRAME  128    /* Number of frames of generated FPID data */
-#define N_DWT 8          /* Number of wave samples when conducting dwt */
-
-
-// Function prototype
-short int dwt(short int * wave16);
-
-short int dwt(short int * wave16) {
-    for (int i=N_DWT; i>1; i/=2) {
-        for (int j=0; j<i/2; j++) {
-            wave16[j] = (wave16[j*2] + wave16[j*2 + 1]) / 2;
-        }
-    }
-
-    return wave16[0];
-}
-
 __kernel void generate_fpid(
-    __global const short int * restrict wave16,
-    __global unsigned int * restrict fpid
+    __global const short int * restrict wave,
+    __global short int * restrict fpid
 ) {
-    short int low_wave[NUMDWTECO+1];
+    short int dwt_wave[4097];
 
-    for (int i=0; i<NUMDWTECO; i++) {
-        short int wave[8];
+    #pragma unroll
+    for (int i=0; i<4096; i++) {
+        short int wave_tmp[8];
+        
+        #pragma unroll
         for (int j=0; j<8; j++) {
-            wave[j] = wave16[i*32 + j];
+            wave_tmp[j] = wave[i*32 + j];
         }
 
-        low_wave[i] = dwt(wave);
-    }
-
-    for (int i=0; i<NUMFRAME; i++) {
-        fpid[i] = 0;
-        
-        for (int j=0; j<32; j++) {
-            fpid[i] <<= 1;
-
-            if (low_wave[i*32 + j] > low_wave[i*32 + j + 1]){
-                fpid[i] |= 1;
+        #pragma unroll
+        for (int k=8; k>1; k/=2) {
+            #pragma unroll
+            for (int l=0; l<k/2; l++) {
+                wave_tmp[l] = (wave_tmp[l*2] + wave_tmp[l*2 + 1]) / 2;
             }
         }
+
+        dwt_wave[i] = wave_tmp[0];
+    }
+
+    #pragma unroll
+    for (int i=0; i<4096; i++) {
+        if (dwt_wave[i] > dwt_wave[i+1]) {
+            fpid[i] = 1;
+        }   
     }
 }
-
-
-
-

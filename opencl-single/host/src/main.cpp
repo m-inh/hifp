@@ -1,5 +1,5 @@
 #define MAX_SOURCE_SIZE (0x100000)
-#define MAX_SONGS 2000
+#define NUM_SONGS 1
 
 #ifdef __APPLE__
 #define I_DIR "../wav"
@@ -39,6 +39,7 @@ using namespace my_utils;
 const int NUMWAVE = NUM_WAVE;
 const int NUMDWTECO = NUM_DWT_ECO;
 const int NUMFRAME = NUM_FRAME;
+const int num_songs = NUM_SONGS;
 
 // OpenCL runtime configuration
 string binary_file = "hifp.aocx";
@@ -52,14 +53,13 @@ cl_command_queue queue_2 = NULL;
 cl_program program = NULL;
 cl_kernel kernel[2];
 
-cl_mem wave16_buf = NULL;
+cl_mem wave_buf = NULL;
 cl_mem fpid_buf = NULL;
-// cl_mem plain_fpid_buf = NULL;
 
 const cl_uint work_dim[2] = {1, 1};
 const cl_uint num_events_in_wait_list[2] = {1, 1};
 const size_t global_work_offset[2] = {0, 0};
-const size_t global_work_size[2] = {NUMDWTECO, NUMDWTECO};
+const size_t global_work_size[2] = {4096};
 const size_t local_work_size[2] = {0, 0};
 
 
@@ -68,9 +68,10 @@ const char *IDIR = I_DIR;
 const char *ODIR = O_DIR;
 const char *CSVDIR = CSV_DIR;
 
-short int    wave16[NUMWAVE];
-unsigned int fpid[NUMDWTECO];
+short int wave[NUMWAVE];
+short int fpid[NUMDWTECO];
 
+unsigned int c_fpid[128];
 
 int song_id = 0;
 vector<string> song_names;
@@ -115,7 +116,7 @@ int main(int argc, char ** argv)
     ASSERT(dir != NULL);
     
 
-    while ((ep = readdir(dir)) != NULL && song_id < MAX_SONGS)
+    while ((ep = readdir(dir)) != NULL && song_id < num_songs)
     {
         if (ep->d_type == DT_REG)
         {
@@ -132,14 +133,36 @@ int main(int argc, char ** argv)
 
             init_problem(ifp, ofp);
             run();
+
+            // compress fpid: 4096 -> 128
+            // memset(c_fpid, 0, sizeof(c_fpid));
+
+            // for (int i=0; i<128; i++) {
+            //     int fpid_offset = i * 32;
+            //     c_fpid[i] = 0;
+            //     for (int j=0; j<32; j++) {
+            //         c_fpid[i] <<= 1;
+                        
+            //         if (fpid[fpid_offset+j] == 1) {
+            //             c_fpid[i] |= 1;
+            //         }
+            //     }
+            // }
             
-            for (int i=0; i<NUMFRAME; i++) {
-               printf("%u ", fpid[i]);
-            }
+            // print FPID for verification
+            // for (int i=0; i<NUMDWTECO; i++) {
+            //     printf("%hu ", fpid[i]);
+            // }
+            // printf("\n\n");
+
+            // for (int i=0; i<128; i++) {
+            //     printf("%u ", c_fpid[i]);
+            // }
+
             printf("\n\n");
 
 
-            save_fp_to_disk(ofp, fpid);
+            // save_fp_to_disk(ofp, fpid);
             
             if (ifp != NULL) {
                 fclose(ifp);
@@ -286,12 +309,12 @@ int init_problem(FILE *ifp, FILE *ofp)
     WAVEHEADER wave_header;
 
     /* initialize all array elements to zero */
-    memset(wave16, 0, sizeof(wave16));
+    memset(wave, 0, sizeof(wave));
     memset(fpid, 0, sizeof(fpid));
 
     /* Load data */
     wave_header = read_wave_header(ifp);
-    read_wav_data(ifp, wave16, wave_header);
+    read_wav_data(ifp, wave, wave_header);
 
     return 0;
 }
@@ -307,16 +330,16 @@ void run()
 
 
     /* Create buffer */
-    wave16_buf = clCreateBuffer(context, CL_MEM_READ_ONLY, NUMWAVE * sizeof(short int), NULL, &status);
+    wave_buf = clCreateBuffer(context, CL_MEM_READ_ONLY, NUMWAVE * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for input");
-    fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(unsigned int), NULL, &status);
+    fpid_buf   = clCreateBuffer(context, CL_MEM_READ_WRITE, NUMDWTECO * sizeof(short int), NULL, &status);
     checkError(status, "Failed to create buffer for output 1 - fpid");
 
     
     // Set kernel arguments.
     /* kernel 0 */
     unsigned argi = 0;
-    status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &wave16_buf);
+    status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &wave_buf);
     checkError(status, "Failed to set argument %d", argi - 1);
     status = clSetKernelArg(kernel[0], argi++, sizeof(cl_mem), &fpid_buf);
     checkError(status, "Failed to set argument %d", argi - 1);    
@@ -325,7 +348,7 @@ void run()
     const double start_time = getCurrentTimestamp();
 
     /* Transfer data to device */
-    status = clEnqueueWriteBuffer(queue, wave16_buf, CL_FALSE, 0, NUMWAVE * sizeof(short int), wave16, 0, NULL, &write_event[0]);
+    status = clEnqueueWriteBuffer(queue, wave_buf, CL_FALSE, 0, NUMWAVE * sizeof(short int), wave, 0, NULL, &write_event[0]);
     checkError(status, "Failed to transfer input wav");
 
 
@@ -341,7 +364,7 @@ void run()
 
 
     /* Read result from device */
-    status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMDWTECO * sizeof(unsigned int), fpid, 1, &kernel_event[0], &read_event[0]);
+    status = clEnqueueReadBuffer(queue, fpid_buf, CL_FALSE, 0, NUMDWTECO * sizeof(short int), fpid, 1, &kernel_event[0], &read_event[0]);
     clWaitForEvents(1, read_event);
 
 
@@ -397,6 +420,6 @@ void cleanup()
     clReleaseCommandQueue(queue);
     clReleaseProgram(program);
     clReleaseContext(context);
-    clReleaseMemObject(wave16_buf);
+    clReleaseMemObject(wave_buf);
     clReleaseMemObject(fpid_buf);
 }

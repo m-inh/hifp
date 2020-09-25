@@ -1,5 +1,5 @@
 #define NUM_SONGS 1
-#define WORK_SIZE 128
+#define WORK_SIZE 256
 
 #define MAX_SOURCE_SIZE 1048576
 
@@ -66,7 +66,7 @@ cl_mem dwteco_buf = NULL;
 const cl_uint work_dim[1] = {1};
 const cl_uint num_events_in_wait_list[1] = {1};
 const size_t global_work_offset[1] = {0};
-const size_t global_work_size[1] = {work_size*num_songs};
+const size_t global_work_size[1] = {work_size};
 const size_t local_work_size[1] = {work_size};
 
 
@@ -146,19 +146,19 @@ int main(int argc, char ** argv)
             run();
 
             // compress fpid: 4096 -> 128
-            memset(c_fpid, 0, sizeof(c_fpid));
+            // memset(c_fpid, 0, sizeof(c_fpid));
 
-            for (int i=0; i<128; i++) {
-                int fpid_offset = i * 32;
-                c_fpid[i] = 0;
-                for (int j=0; j<32; j++) {
-                    c_fpid[i] <<= 1;
+            // for (int i=0; i<128; i++) {
+            //     int fpid_offset = i * 32;
+            //     c_fpid[i] = 0;
+            //     for (int j=0; j<32; j++) {
+            //         c_fpid[i] <<= 1;
                         
-                    if (fpid[fpid_offset+j] == 1) {
-                        c_fpid[i] |= 1;
-                    }
-                }
-            }
+            //         if (fpid[fpid_offset+j] == 1) {
+            //             c_fpid[i] |= 1;
+            //         }
+            //     }
+            // }
             
             // print FPID for verification
             // for (int i=0; i<NUMDWTECO; i++) {
@@ -166,11 +166,11 @@ int main(int argc, char ** argv)
             // }
             // printf("\n\n");
 
-            for (int i=0; i<128; i++) {
-                printf("%u ", c_fpid[i]);
-            }
+            // for (int i=0; i<128; i++) {
+            //     printf("%u ", c_fpid[i]);
+            // }
 
-            printf("\n\n");
+            // printf("\n\n");
 
             // save_fp_to_disk(ofp, c_fpid);
             

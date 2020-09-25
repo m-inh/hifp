@@ -1,4 +1,3 @@
-#define NUM_SONGS 1
 #define WORK_SIZE 256
 
 #define MAX_SOURCE_SIZE 1048576
@@ -42,7 +41,6 @@ const int NUMWAVE = NUM_WAVE;
 const int NUMDWTECO = NUM_DWT_ECO;
 const int NUMFRAME = NUM_FRAME;
 
-const int num_songs = NUM_SONGS;
 const int work_size = WORK_SIZE;
 
 // OpenCL runtime configuration
@@ -127,7 +125,7 @@ int main(int argc, char ** argv)
     dir = opendir(IDIR);
     ASSERT(dir != NULL);
 
-    while ((ep = readdir(dir)) != NULL && song_id < num_songs)
+    while ((ep = readdir(dir)) != NULL)
     {
         if (ep->d_type == DT_REG)
         {
@@ -194,7 +192,7 @@ int main(int argc, char ** argv)
 
     get_date_time((char *) current_datetime);
     sprintf(csvpath, "%s/%s.%s.%s_%u.csv", CSVDIR, "opencl", platform_name, current_datetime, (int) round(getCurrentTimestamp()));
-    // save_csv(csvpath);
+    save_csv(csvpath);
 
     cleanup();
 

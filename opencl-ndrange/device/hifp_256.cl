@@ -1,20 +1,17 @@
-#define GROUP_SIZE 256
-
-__attribute__ ((reqd_work_group_size(GROUP_SIZE, 1, 1)))
+__attribute__ ((reqd_work_group_size(256, 1, 1)))
 __kernel void generate_fpid(
     __global const short int * restrict wave,
     __global short int * restrict fpid
 )
 {
     int lid = get_local_id(0);
-    int num_chunks = 4096 / GROUP_SIZE;
     
     __local short int dwtwave[4097];    
     
-    int fpid_offset = lid * num_chunks;
+    int fpid_offset = lid * 16;
     
     // dwt    
-    for (int i=0; i<num_chunks; i++) {
+    for (int i=0; i<16; i++) {
         int wave_offset = (fpid_offset + i) * 32;
 
         short int wave_tmp[8];
@@ -37,7 +34,7 @@ __kernel void generate_fpid(
 
 
     // feature extraction
-    for (int i=0; i<num_chunks; i++) {
+    for (int i=0; i<16; i++) {
         if (dwtwave[fpid_offset+i] > dwtwave[fpid_offset+i+1]) {
             fpid[fpid_offset+i] = 1;
         } else {

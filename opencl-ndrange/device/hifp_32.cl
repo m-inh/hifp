@@ -1,17 +1,17 @@
-__attribute__ ((reqd_work_group_size(512, 1, 1)))
+__attribute__ ((reqd_work_group_size(32, 1, 1)))
 __kernel void generate_fpid(
     __global const short int * restrict wave,
     __global short int * restrict fpid
 )
 {
     int lid = get_local_id(0);
-
+    
     __local short int dwtwave[4097];    
     
-    int fpid_offset = lid * 8;
+    int fpid_offset = lid * 128;
     
     // dwt    
-    for (int i=0; i<8; i++) {
+    for (int i=0; i<128; i++) {
         int wave_offset = (fpid_offset + i) * 32;
 
         short int wave_tmp[8];
@@ -34,7 +34,7 @@ __kernel void generate_fpid(
 
 
     // feature extraction
-    for (int i=0; i<8; i++) {
+    for (int i=0; i<128; i++) {
         if (dwtwave[fpid_offset+i] > dwtwave[fpid_offset+i+1]) {
             fpid[fpid_offset+i] = 1;
         } else {

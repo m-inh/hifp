@@ -12,9 +12,9 @@
 # echo "1024 done"
 # echo "----------------------------"
 
-# aoc device/hifp_512.cl -o bin_512/hifp.aocx -board=pac_a10
-# echo "512 done"
-# echo "----------------------------"
+aoc device/hifp_512.cl -o bin_512/hifp.aocx -board=pac_a10
+echo "512 done"
+echo "----------------------------"
 
 aoc device/hifp_256.cl -o bin_256/hifp.aocx -board=pac_a10
 echo "256 done"
@@ -26,6 +26,9 @@ echo "----------------------------"
 
 aoc device/hifp_64.cl -o bin_64/hifp.aocx -board=pac_a10
 echo "64 done"
+
+aoc device/hifp_32.cl -o bin_32/hifp.aocx -board=pac_a10
+echo "32 done"
 
 echo "============================"
 echo "all done"

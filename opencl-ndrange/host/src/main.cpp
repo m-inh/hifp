@@ -1,4 +1,4 @@
-#define WORK_SIZE 256
+#define WORK_SIZE 128
 
 #define MAX_SOURCE_SIZE 1048576
 

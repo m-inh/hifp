@@ -1,4 +1,4 @@
-#define WORK_SIZE 256
+#define WORK_SIZE 32
 
 #define MAX_SOURCE_SIZE 1048576
 
@@ -44,7 +44,7 @@ const int NUMFRAME = NUM_FRAME;
 const int work_size = WORK_SIZE;
 
 // OpenCL runtime configuration
-string binary_file = "hifp_256.aocx";
+string binary_file = "hifp.aocx";
 cl_platform_id platform = NULL;
 char platform_name[50];
 unsigned num_devices = 0;

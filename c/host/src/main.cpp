@@ -57,8 +57,9 @@ int main(int argc, char **argv)
     int r;
 
     WAVEHEADER wave_header;
-    short int wave16[NUMWAVE];
-    unsigned int fpid[NUMFRAME];
+    short int wave16[131072];
+    short int fpid[4096];
+    unsigned int c_fpid[128];
     unsigned int plain_fpid[NUMFRAME];
     short int dwt_eco[NUMDWTECO];
 
@@ -100,7 +101,7 @@ int main(int argc, char **argv)
             const double start_time_execution = getCurrentTimestamp();
 
             /* Run */
-            gen_fpid(wave16, fpid, dwt_eco);
+            gen_fpid_2(wave16, fpid, dwt_eco);
 
             const double end_time_execution = getCurrentTimestamp();
 
@@ -111,15 +112,34 @@ int main(int argc, char **argv)
             printf("preprocessing_time: %s : %lf \n", ep->d_name, preprocessing_time_tmp);
             printf("execution_time: %s : %lf \n", ep->d_name, execution_time_tmp);
 
-            for (int i=0; i<NUMFRAME; i++) {
-                printf("%u ", fpid[i]);
+            for (int i=0; i<128; i++) {
+                int fpid_offset = i * 32;
+                c_fpid[i] = 0;
+                for (int j=0; j<32; j++) {
+                    c_fpid[i] <<= 1;
+                        
+                    if (fpid[fpid_offset+j] == 1) {
+                        c_fpid[i] |= 1;
+                    }
+                }
             }
+            
+            // print FPID for verification
+            // for (int i=0; i<NUMDWTECO; i++) {
+            //     printf("%hu ", fpid[i]);
+            // }
+            // printf("\n\n");
 
-            printf("\n\n");
+            // for (int i=0; i<128; i++) {
+            //     printf("%u ", c_fpid[i]);
+            // }
+
+            // printf("\n\n");
+
 
             // verify_fpid(fpid, NULL, NULL);
 
-            save_fp_to_disk(ofp, fpid);
+            // save_fp_to_disk(ofp, fpid);
 
 
             fclose(ifp);

@@ -1,5 +1,5 @@
 #define MAX_SOURCE_SIZE (0x100000)
-#define NUM_SONGS 1
+#define NUM_SONGS 1000
 
 #ifdef __APPLE__
 #define I_DIR "../wav"

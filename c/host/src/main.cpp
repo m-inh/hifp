@@ -1,4 +1,4 @@
-#define NUM_SONGS 1
+#define NUM_SONGS 1000
 
 #include <stdio.h>
 #include <stdlib.h>

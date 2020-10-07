@@ -1,3 +1,5 @@
+#define NUM_SONGS 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,6 +31,7 @@ using namespace my_utils;
 const int NUMWAVE   = NUM_WAVE;
 const int NUMDWTECO = NUM_DWT_ECO;
 const int NUMFRAME  = NUM_FRAME;
+const int num_songs = NUM_SONGS;
 
 const char *IDIR = I_DIR;
 const char *ODIR = O_DIR;
@@ -55,6 +58,7 @@ int main(int argc, char **argv)
     FILE *ifp = NULL;
     FILE *ofp = NULL;
     int r;
+    int song_id = 0;
 
     WAVEHEADER wave_header;
     short int wave16[131072];
@@ -73,7 +77,7 @@ int main(int argc, char **argv)
 
     ASSERT(dir != NULL);
 
-    while ((ep = readdir(dir)) != NULL)
+    while ((ep = readdir(dir)) != NULL && song_id < num_songs)
     {
         if (ep->d_type == DT_REG)
         {
@@ -141,6 +145,7 @@ int main(int argc, char **argv)
 
             // save_fp_to_disk(ofp, fpid);
 
+            song_id++;
 
             fclose(ifp);
             ifp = NULL;

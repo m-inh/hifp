@@ -104,7 +104,7 @@ double getCurrentTimestamp()
     return seconds;
 #else // Linux
     timespec a;
-    clock_gettime(CLOCK_REALTIME, &a);
+    clock_gettime(CLOCK_MONOTONIC, &a);
     return (double(a.tv_nsec) * 1.0e-9) + double(a.tv_sec);
 #endif
 }

@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <math.h>
+#include <time.h>
 
 #include "hifp/hifp.h"
 #include "utils/utils.h"
@@ -104,17 +105,23 @@ int main(int argc, char **argv)
 
             const double start_time_execution = getCurrentTimestamp();
 
+            const clock_t e_start_c = clock();
+
             /* Run */
             gen_fpid_2(wave16, fpid, dwt_eco);
+
+            const clock_t e_end_c = clock();
 
             const double end_time_execution = getCurrentTimestamp();
 
             const double execution_time_tmp = (end_time_execution-start_time_execution) * 1e3;
+            const double e_time_c = ((double) (e_end_c - e_start_c)) / CLOCKS_PER_SEC;
             execution_time.push_back(execution_time_tmp);
             preprocessing_time.push_back(preprocessing_time_tmp);
 
             printf("preprocessing_time: %s : %lf \n", ep->d_name, preprocessing_time_tmp);
             printf("execution_time: %s : %lf \n", ep->d_name, execution_time_tmp);
+            printf("e_time_c: %s : %lf \n", ep->d_name, e_time_c);
 
             for (int i=0; i<128; i++) {
                 int fpid_offset = i * 32;

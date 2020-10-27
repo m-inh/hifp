@@ -150,14 +150,14 @@ int main(int argc, char ** argv)
             // }
             
             // print FPID for verification
-            // for (int i=0; i<NUMDWTECO; i++) {
-            //     printf("%hu ", fpid[i]);
-            // }
-            // printf("\n\n");
+            for (int i=0; i<NUMDWTECO; i++) {
+                printf("%hu ", fpid[i]);
+            }
+            printf("\n\n");
 
-            // for (int i=0; i<128; i++) {
-            //     printf("%u ", c_fpid[i]);
-            // }
+            for (int i=0; i<128; i++) {
+                printf("%u ", c_fpid[i]);
+            }
 
             printf("\n\n");
 

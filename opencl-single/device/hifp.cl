@@ -25,4 +25,4 @@ __kernel void generate_fpid(
             fpid[i] = 1;
         }   
     }
-}   
+}

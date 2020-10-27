@@ -2,7 +2,6 @@ short int hifp_rtl(
     __global short int * wave,
     __global short int * fpid
 ) {
-    // short int fpid[4096];
     short int dwt_wave[4097];
 
     for (int i=0; i<4096; i++) {

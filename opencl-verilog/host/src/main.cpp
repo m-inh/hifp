@@ -42,7 +42,7 @@ const int NUMFRAME = NUM_FRAME;
 const int num_songs = NUM_SONGS;
 
 // OpenCL runtime configuration
-string binary_file = "hifp.aocx";
+string binary_file = "example2.aocx";
 cl_platform_id platform = NULL;
 char platform_name[50];
 unsigned num_devices = 0;

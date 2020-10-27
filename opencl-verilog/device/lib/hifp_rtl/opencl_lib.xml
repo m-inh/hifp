@@ -31,10 +31,10 @@
 
     </INTERFACE>
     <C_MODEL>
-      <FILE name="hifp_rtl/c_model.cl" />
+      <FILE name="c_model.cl" />
     </C_MODEL>
     <REQUIREMENTS>
-      <FILE name="hifp_rtl/hifp.v" />
+      <FILE name="hifp.v" />
     </REQUIREMENTS>
   </FUNCTION>
 </RTL_SPEC>

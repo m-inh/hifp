@@ -1,6 +1,6 @@
 uint hifp_rtl(
-    __global short int * wave,
-    __global short int * fpid,
+    __global uint * wave,
+    __global uint * fpid,
     uint global_id, 
     uint local_id, 
     uint global_size_0,

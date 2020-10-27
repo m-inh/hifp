@@ -69,5 +69,5 @@ __kernel void generate_fpid(
     __global int * restrict wave,
     __global int * restrict fpid
 ) {
-    hifp_rtl(wave, fpid);
+    hifp_rtl(wave, fpid, 0, 0, 0, 0);
 }

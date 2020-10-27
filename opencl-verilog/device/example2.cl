@@ -65,3 +65,9 @@ __kernel void test11( __global uint* restrict A,
   }
 }
 
+__kernel void generate_fpid(
+    __global short int * restrict wave,
+    __global short int * restrict fpid
+) {
+    hifp_rtl(wave, fpid);
+}

@@ -22,3 +22,9 @@ uint sumOfElements(__global uint* A,
                    uint global_size,
                    uint workgroup_size);
 
+uint hifp_rtl(__global uint* dst, 
+                 __global uint *src, 
+                 uint global_id, 
+                 uint local_id, 
+                 uint global_size_0,
+                 uint workgroup_size);

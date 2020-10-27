@@ -44,7 +44,7 @@ __kernel void test6( __global uint* restrict A,
                                 ) + 100;
 }
 
-`
+
 // RTL module in a task.
 __kernel void test11( __global uint* restrict A,
                       __global uint* restrict B, 

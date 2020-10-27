@@ -17,24 +17,24 @@
       <AVALON port="m_valid_out" type="ovalid"/>
       <AVALON port="m_ready_in" type="iready"/>
 
-      <MEM_INPUT port="m_input_wave" access="readonly"/>
       <MEM_INPUT port="m_input_fpid" access="readwrite"/>
+      <MEM_INPUT port="m_input_wave" access="readonly"/>
       
-      <!-- <INPUT port="m_input_global_id_0" width="32"/>
+      <INPUT port="m_input_global_id_0" width="32"/>
       <INPUT port="m_input_local_id_3" width="32"/>
       <INPUT port="m_input_global_size_0" width="32"/>
-      <INPUT port="m_workgroup_size" width="32"/> -->
-      <OUTPUT port="m_output_0" width="16"/>
+      <INPUT port="m_workgroup_size" width="32"/>
+      <OUTPUT port="m_output_0" width="32"/>
 
       <AVALON_MEM port="avm_local_bb1_ld_" width="512" burstwidth="5" optype="read" buffer_location="" />
       <AVALON_MEM port="avm_local_bb1_st_" width="512" burstwidth="5" optype="write" buffer_location="" />
 
     </INTERFACE>
     <C_MODEL>
-      <FILE name="c_model.cl" />
+      <FILE name="hifp_rtl.cl" />
     </C_MODEL>
     <REQUIREMENTS>
-      <FILE name="hifp.v" />
+      <FILE name="hifp_rtl.v" />
     </REQUIREMENTS>
   </FUNCTION>
 </RTL_SPEC>

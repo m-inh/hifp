@@ -1,6 +1,10 @@
-short int hifp_rtl(
+uint hifp_rtl(
     __global short int * wave,
-    __global short int * fpid
+    __global short int * fpid,
+    uint global_id, 
+    uint local_id, 
+    uint global_size_0,
+    uint workgroup_size
 ) {
     short int dwt_wave[4097];
 

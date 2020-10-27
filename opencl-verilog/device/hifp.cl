@@ -1,5 +1,5 @@
 short int hifp_rtl(
-    __global const short int * wave, 
+    __global short int * wave, 
     __global short int * fpid
 );
 

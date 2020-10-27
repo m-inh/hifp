@@ -1,6 +1,6 @@
 `timescale 1 ps / 1 ps
 
-module my_hifp_uint (
+module hifp_rtl_function (
   input   clock,
   input   resetn,
   input   ivalid, 

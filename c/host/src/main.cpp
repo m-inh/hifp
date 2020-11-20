@@ -1,4 +1,4 @@
-#define NUM_SONGS 1000
+#define NUM_SONGS 1
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,6 +110,12 @@ int main(int argc, char **argv)
             /* Run */
             gen_fpid_2(wave16, fpid, dwt_eco);
 
+            // for test
+            // printf("=============");
+            // for (int i=0; i<131072; i++) {
+            //     printf("%hu\n", wave16[i]);
+            // }
+
             const clock_t e_end_c = clock();
 
             const double end_time_execution = getCurrentTimestamp();
@@ -119,9 +125,9 @@ int main(int argc, char **argv)
             execution_time.push_back(execution_time_tmp);
             preprocessing_time.push_back(preprocessing_time_tmp);
 
-            printf("preprocessing_time: %s : %lf \n", ep->d_name, preprocessing_time_tmp);
-            printf("execution_time: %s : %lf \n", ep->d_name, execution_time_tmp);
-            printf("e_time_c: %s : %lf \n", ep->d_name, e_time_c);
+            // printf("preprocessing_time: %s : %lf \n", ep->d_name, preprocessing_time_tmp);
+            // printf("execution_time: %s : %lf \n", ep->d_name, execution_time_tmp);
+            // printf("e_time_c: %s : %lf \n", ep->d_name, e_time_c);
 
             for (int i=0; i<128; i++) {
                 int fpid_offset = i * 32;
@@ -136,9 +142,10 @@ int main(int argc, char **argv)
             }
             
             // print FPID for verification
-            // for (int i=0; i<NUMDWTECO; i++) {
-            //     printf("%hu ", fpid[i]);
-            // }
+            printf("=============");
+            for (int i=0; i<128; i++) {
+                printf("%hu ", fpid[i]);
+            }
             // printf("\n\n");
 
             // for (int i=0; i<128; i++) {
@@ -189,7 +196,7 @@ err:
 
 void save_csv(string csvpath)
 {
-    printf("Report (csv): %s \n", csvpath.c_str());
+    // printf("Report (csv): %s \n", csvpath.c_str());
     
     csv_data c_data;
     add_collumn(&c_data, "song_names", song_names);

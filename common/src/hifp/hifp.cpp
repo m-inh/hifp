@@ -221,12 +221,60 @@ short int gen_fpid_2(
         }
 
         dwt_wave[i] = wave_tmp[0];
+
+        // printf("dwt_wave[%d]: %hu \n", i, dwt_wave[i]);
     }
 
-    for (int i=0; i<4096; i++) {
+    for (int i=0; i<32; i++) {
         if (dwt_wave[i] > dwt_wave[i+1]) {
             fpid[i] = 1;
         }   
+    }
+
+    return 0;
+err:
+    return -1;
+}
+
+// for unsigned short int
+short int gen_fpid_3(
+    short int * wave, 
+    short int * fpid,
+    short int * dwt_eco
+)
+{
+    unsigned int dwt_wave[4097];
+
+    memset(dwt_wave, 0, sizeof(dwt_wave));
+
+    for (int i=0; i<4096; i++) {
+        unsigned int wave_tmp[8];
+        
+        for (int j=0; j<8; j++) {
+            wave_tmp[j] = (unsigned int)wave[i*32 + j];
+        }
+
+        for (int k=8; k>1; k/=2) {
+            for (int l=0; l<k/2; l++) {
+                wave_tmp[l] = (wave_tmp[l*2] + wave_tmp[l*2 + 1]) / 2;
+            }
+        }
+
+        dwt_wave[i] = wave_tmp[0];
+
+        // printf("dwt_wave[%d]: %hu \n", i, dwt_wave[i]);
+    }
+
+    for (int i=0; i<32; i++) {
+        if ((unsigned int)dwt_wave[i] > (unsigned int)dwt_wave[i+1]) {
+            fpid[i] = 1;
+
+            // printf("fpid[%d]: %hu \n", i, fpid[i]);
+            // printf("dwt_wave[%d]: %hu \n", i, dwt_wave[i]);
+            // printf("dwt_wave[%d]: %hu \n", i+1, dwt_wave[i+1]);
+        }   
+        printf("%hi ", fpid[i]);
+        // printf("dwt_wave[%d]: %hu \n", i, dwt_wave[i]);
     }
 
     return 0;

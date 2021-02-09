@@ -108,12 +108,12 @@ int main(int argc, char **argv)
             const clock_t e_start_c = clock();
 
             /* Run */
-            gen_fpid_2(wave16, fpid, dwt_eco);
+            gen_fpid_3(wave16, fpid, dwt_eco);
 
             // for test
             // printf("=============");
-            // for (int i=0; i<131072; i++) {
-            //     printf("%hu\n", wave16[i]);
+            // for (int i=0; i<1024; i++) {
+            //     printf("tb_wave_all(%d) <= %hu; \n", i, wave16[i]);
             // }
 
             const clock_t e_end_c = clock();
@@ -142,10 +142,10 @@ int main(int argc, char **argv)
             }
             
             // print FPID for verification
-            printf("=============");
-            for (int i=0; i<128; i++) {
-                printf("%hu ", fpid[i]);
-            }
+            // printf("=============");
+            // for (int i=0; i<32; i++) {
+            //     printf("%hu ", fpid[i]);
+            // }
             // printf("\n\n");
 
             // for (int i=0; i<128; i++) {

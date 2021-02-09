@@ -71,6 +71,7 @@ WAVEHEADER read_wave_header(FILE *ifp);
 int read_wav_data(FILE *ifp, short int *wav_data, WAVEHEADER wave_header);
 int gen_fpid(short int *wave16, unsigned int *fpid, short int *dwt_eco);
 short int gen_fpid_2(short int *wave16, short int *fpid, short int *dwt_eco);
+short int gen_fpid_3(short int *wave16, short int *fpid, short int *dwt_eco);
 int save_fp_to_disk(FILE *ofp, unsigned int *fpid);
 void verify_fpid(unsigned int *fpid, unsigned int *plain_fpid, unsigned int *dwt);
 // int run_all(FILE *ifp, FILE *ofp);

@@ -9,16 +9,14 @@ __kernel void generate_fpid(
     int lid = get_local_id(0);
     int group_id = get_group_id(0);
 
-    int num_of_chunks = 4096 / GROUP_SIZE;
-
     __local short int dwtwave[4097];
     
+    int num_of_chunks = 4096 / GROUP_SIZE;
     int wave_global_offset = group_id * 131072;
-    int fpid_global_offset = group_id * 4096;    
+    int fpid_global_offset = group_id * 4096;
+    int fpid_offset = lid * num_of_chunks;
 
     // dwt
-    int fpid_offset = lid * num_of_chunks;
-        
     #pragma unroll
     for (int j=0; j<num_of_chunks; j++) {
         int wave_offset = wave_global_offset + ((fpid_offset + j) * 32);

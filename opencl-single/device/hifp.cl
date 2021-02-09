@@ -4,6 +4,7 @@ __kernel void generate_fpid(
 ) {
     short int dwt_wave[4097];
 
+    // dwt
     for (int i=0; i<4096; i++) {
         short int wave_tmp[8];
         
@@ -20,6 +21,7 @@ __kernel void generate_fpid(
         dwt_wave[i] = wave_tmp[0];
     }
 
+    // feature extraction
     for (int i=0; i<4096; i++) {
         if (dwt_wave[i] > dwt_wave[i+1]) {
             fpid[i] = 1;
